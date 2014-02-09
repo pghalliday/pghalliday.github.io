@@ -5,7 +5,7 @@ task :default => :server
 
 desc "server"
 task :server do
-  system "bundle exec jekyll serve --watch"
+  system "bundle exec jekyll serve --watch --drafts"
 end
 
 # rake ci msg="message"
