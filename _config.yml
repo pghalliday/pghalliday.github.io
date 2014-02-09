@@ -6,5 +6,8 @@ exclude: [
   Berksfile,
   Berksfile.lock,
   cookbooks,
-  Vagrantfile
+  Vagrantfile,
+  Rakefile,
+  Gemfile,
+  Gemfile.lock
 ]
