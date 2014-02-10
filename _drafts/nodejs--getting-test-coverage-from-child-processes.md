@@ -2,7 +2,7 @@
 layout: post
 title:  "NodeJS - Getting test coverage from child processes"
 date:   2014-02-09 16:23:38
-categories: nodejs test coverage
+categories: NodeJS test coverage Javascript
 ---
 
 This is a problem that I keep running into. I like to use a combination of `Grunt`, `Mocha` and `Blanket` to get coverage reports from my unit tests. The problem is that this creates a global variable to collect the coverage data in the process in which the code under test runs. Normally this is the same process in which `Grunt` and `Mocha` are running, however I have a common class of tests in which this is not true.
