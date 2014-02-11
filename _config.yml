@@ -1,11 +1,13 @@
 name: pghalliday
 markdown: redcarpet
 pygments: true
+excerpt_separator: "\n"
 exclude: [
   README.md,
   Berksfile,
   Berksfile.lock,
   cookbooks,
+  'vagrant-scripts',
   Vagrantfile,
   Rakefile,
   Gemfile,

@@ -8,6 +8,11 @@ task :server do
   system "bundle exec jekyll serve --watch --drafts"
 end
 
+desc "stage"
+task :stage do
+  system "bundle exec jekyll serve --watch"
+end
+
 # rake ci msg="message"
 desc "commit"
 task :ci do

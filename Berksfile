@@ -1,3 +1,3 @@
 site :opscode
 
-cookbook 'jekyll', path: 'cookbooks/jekyll'
+cookbook 'ruby-with-bundler', path: 'cookbooks/ruby-with-bundler'
