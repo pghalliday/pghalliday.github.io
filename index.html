@@ -8,8 +8,9 @@ title: pghalliday
   <ul class="posts">
     {% for post in site.posts %}
       <li>
-        <span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}#disqus_thread">{{ post.title }}</a>
+        <span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a>
         <p>{{ post.excerpt }}</p>
+        <p><a href="{{ post.url }}#disqus_thread" data-disqus-identifier="{{ post.disqus_identifier }}">Comments</a></p>
       </li>
     {% endfor %}
   </ul>
