@@ -1,7 +1,6 @@
 ---
 layout: post
 title:  "Submitting Mocha BDD test results to Sonar"
-date:   2014-02-11 12:19:00
 categories: NodeJS test coverage Sonar Mocha BDD Javascript
 disqus_identifier: submitting-mocha-bdd-test-results-to-sonar
 ---
