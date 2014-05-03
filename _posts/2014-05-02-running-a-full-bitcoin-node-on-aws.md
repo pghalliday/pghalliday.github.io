@@ -70,7 +70,7 @@ sudo mount -a
 Now add a `bitcoin` system user, setting its home directory on the EBS volume
 
 ```
-sudo adduser --system --group --home /data/bitcoin bitcoin
+sudo adduser --system --group --shell /bin/bash --home /data/bitcoin bitcoin
 ```
 
 To configure `bitcoind` we now need to add a config file to `/data/bitcoin/.bitcoin/bitcoin.conf`
@@ -78,9 +78,10 @@ To configure `bitcoind` we now need to add a config file to `/data/bitcoin/.bitc
 ```
 rpcuser=bitcoinrpc
 rpcpassword=DO_NOT_USE_THIS_PASSWORD_MAKE_UP_SOMETHING_RANDOM_YOU_DONT_HAVE_TO_REMEMBER_IT
+maxconnections=8
 ```
 
-And set the permissions on it
+Note that we are limiting the number of connections to conserve memory. Now set the permissions on it
 
 ```
 sudo chown bitcoin:bitcoin /data/bitcoin/.bitcoin/bitcoin.conf
