@@ -78,10 +78,9 @@ To configure `bitcoind` we now need to add a config file to `/data/bitcoin/.bitc
 ```
 rpcuser=bitcoinrpc
 rpcpassword=DO_NOT_USE_THIS_PASSWORD_MAKE_UP_SOMETHING_RANDOM_YOU_DONT_HAVE_TO_REMEMBER_IT
-maxconnections=8
 ```
 
-Note that we are limiting the number of connections to conserve memory. Now set the permissions on it
+Now set the permissions on it
 
 ```
 sudo chown bitcoin:bitcoin /data/bitcoin/.bitcoin/bitcoin.conf
@@ -112,11 +111,38 @@ exec start-stop-daemon --start -c $user --chdir $home --pidfile $pidfile --start
 end script
 ```
 
-Lastly, to register the service and start it...
+Before we can start the service we need to make sure that the machine does not run out of memory and crash it. This will happen after a fairly short time. The solution is to add a swapfile.
+
+```
+sudo dd if=/dev/zero of=/swapfile bs=1024 count=256k
+sudo mkswap /swapfile
+```
+
+This creates the swap file and activates it. In order to ensure it is activated on reboot we need to add another entry to `/etc/fstab`
+
+```
+/swapfile       none    swap    sw      0       0 
+```
+
+To ensure that the swapfile is only used when it's really needed we should set the swappiness. This is an optimization of the kernel. A high value (maximum of 100) would tell the kernel to favour the swap file, we will set a low value of 10 to favour RAM when it is available.
+
+```
+echo 10 | sudo tee /proc/sys/vm/swappiness
+echo vm.swappiness = 10 | sudo tee -a /etc/sysctl.conf
+```
+
+These commands set the current swappiness value and set the kernel configuration to the same value on reboot. To finish configuring the swapfile, set its permissions so that it cannot be read by other users.
+
+```
+sudo chown root:root /swapfile 
+sudo chmod 0600 /swapfile
+```
+
+Only now should we register the service and start it...
 
 ```
 sudo initctl reload-configuration
 sudo start bitcoind
 ```
 
-Now it should be running, although I have no intention of actually using it as a wallet it will hopefully be providing the useful services of a participating full node. Now let's see how the costs stack up.
+And there we go, the bitcoin node should be running and downloading the blockchain. I have no intention of actually using it as a wallet but hopefully it will be providing the useful services of a participating full node. Now let's see how the costs stack up.
