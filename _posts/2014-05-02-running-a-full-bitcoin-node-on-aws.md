@@ -8,7 +8,7 @@ disqus_identifier: running-a-full-bitcoin-node-on-aws
 I just want to know how much it will cost to run a full bitcoin node on an EC2 instance. The two main factors being disk usage (the size of the block chain at the time of writing being around 17GB) and IO (how much traffic I may have to pay for to allow incoming connections on port 8333).
 
 1. I start with a t1.micro instance running Ubuntu 14.04 (LTS) 64 bit.
-1. For now I accept the default 8GB root volume and add an additional 20GB EBS volume on which I'll store the blockchain (should be good for a few weeks... I think)
+1. For now I accept the default 8GB root volume and add an additional 40GB EBS volume on which I'll store the blockchain (Originally I started with 20GB but this did not last long before running out of space and crashing the node - i'm sure less would suffice for a while but i don't want to resize the disk again every few days/weeks)
 1. I configure any IP access on port 22 for SSH (I have to be able to configure my server - although I could restrict the IP addresses allowed to connect on this port for added security)
 1. I configure any IP access on port 8333 (I want this to be a useful node and not a leech! So other nodes have to be able to connect)
 1. I create a new key pair to access the server using SSH and launch the instance!
@@ -34,7 +34,7 @@ sudo apt-get install bitcoind
 
 And configure it as a service...
 
-Before I start the `bitcoind` service I want to configure it to use my 20GB EBS volume for the blockchain. The first step of which is to initialize and mount the volume. Run the following command to get the device name
+Before I start the `bitcoind` service I want to configure it to use my EBS volume for the blockchain. The first step of which is to initialize and mount the volume. Run the following command to get the device name
 
 ```
 # lsblk
