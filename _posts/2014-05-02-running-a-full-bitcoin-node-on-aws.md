@@ -114,11 +114,11 @@ end script
 Before we can start the service we need to make sure that the machine does not run out of memory and crash it. This will happen after a fairly short time. The solution is to add a swapfile.
 
 ```
-sudo dd if=/dev/zero of=/swapfile bs=1024 count=256k
+sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
 sudo mkswap /swapfile
 ```
 
-This creates the swap file and activates it. In order to ensure it is activated on reboot we need to add another entry to `/etc/fstab`
+This creates a 1GB (a little under twice the RAM of 0.613GB on a t1.micro instance) swap file and activates it. In order to ensure it is activated on reboot we need to add another entry to `/etc/fstab`
 
 ```
 /swapfile       none    swap    sw      0       0 
