@@ -116,6 +116,7 @@ Before we can start the service we need to make sure that the machine does not r
 ```
 sudo dd if=/dev/zero of=/swapfile bs=1M count=1024
 sudo mkswap /swapfile
+sudo swapon /swapfile
 ```
 
 This creates a 1GB (a little under twice the RAM of 0.613GB on a t1.micro instance) swap file and activates it. In order to ensure it is activated on reboot we need to add another entry to `/etc/fstab`
