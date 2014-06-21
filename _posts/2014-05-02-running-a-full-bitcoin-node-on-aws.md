@@ -107,7 +107,7 @@ pidfile=$home/bitcoind.pid
 # Don't change anything below here unless you know what you're doing
 [[ -e $pidfile && ! -d "/proc/$(cat $pidfile)" ]] && rm $pidfile
 [[ -e $pidfile && "$(cat /proc/$(cat $pidfile)/cmdline)" != $cmd* ]] && rm $pidfile
-exec start-stop-daemon --start -c $user --chdir $home --pidfile $pidfile --startas $cmd -b -m
+exec start-stop-daemon --start -c $user --chdir $home --pidfile $pidfile --startas $cmd -b --nicelevel 15 -m
 end script
 ```
 
