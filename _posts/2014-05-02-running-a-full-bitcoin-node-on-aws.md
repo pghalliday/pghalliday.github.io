@@ -39,7 +39,7 @@ Before I start the `bitcoind` service I want to configure it to use my EBS volum
 ```
 # lsblk
 NAME  MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
-xvdb  202:16   0  20G  0 disk 
+xvdb  202:16   0  40G  0 disk 
 xvda1 202:1    0   8G  0 disk /
 ```
 
