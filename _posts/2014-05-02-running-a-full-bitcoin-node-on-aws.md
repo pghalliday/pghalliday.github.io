@@ -23,7 +23,9 @@ EC2
 ---
 
 $0.020 per On Demand Linux t1.micro Instance Hour: 744 Hrs:	$14.88
+
 $0.05 per 1 million I/O requests - US East (Northern Virginia): 23,715,799 IOs: $1.19
+
 $0.05 per GB-month of Magnetic provisioned storage - US East (Northern Virginia): 48.000 GB-Mo: $2.40
 
 ---
