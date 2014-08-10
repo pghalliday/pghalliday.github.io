@@ -17,12 +17,14 @@ The main contributions to this were (incl. VAT @ 20%):
 | Data Transfer |   |   |
 |:--------------|---|---|
 | $0.120 per GB - up to 10 TB / month data transfer out | 135.096 GB | $19.46 |
+<br>
 
 | EC2 |   |   |
 |:----|---|---|
 | $0.020 per On Demand Linux t1.micro Instance Hour | 744 Hrs | $17.86 |
 | $0.05 per 1 million I/O requests - US East (Northern Virginia) | 23,715,799 IOs | $1.43 |
 | $0.05 per GB-month of Magnetic provisioned storage - US East (Northern Virginia) | 48.000 GB-Mo | $2.88 |
+<br>
 
 ---
 
