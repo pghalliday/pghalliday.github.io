@@ -6,6 +6,7 @@ disqus_identifier: running-a-full-bitcoin-node-on-aws
 ---
 
 UPDATE - 10th August 2014: The results are in
+=============================================
 
 The node stayed stable throughout July and the free tier benefits ran out before that so the following is the complete cost.
 
