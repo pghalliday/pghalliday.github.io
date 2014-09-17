@@ -8,5 +8,12 @@ exclude: [
   README.md,
   Rakefile,
   Gemfile,
-  Gemfile.lock
+  Gemfile.lock,
+  bower.json,
+  package.json,
+  node_modules,
+  aliases.sh,
+  npm-debug.log,
+  bower_components,
+  gulpfile.js
 ]
