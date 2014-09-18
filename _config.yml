@@ -2,7 +2,7 @@ name: pghalliday
 markdown: redcarpet
 redcarpet:
   extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
-pygments: true
+highlighter: pygments
 excerpt_separator: "\n"
 exclude: [
   README.md,
@@ -15,5 +15,7 @@ exclude: [
   aliases.sh,
   npm-debug.log,
   bower_components,
-  gulpfile.js
+  gulpfile.js,
+  id_rsa.enc,
+  deploy.sh
 ]

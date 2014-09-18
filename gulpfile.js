@@ -1,5 +1,9 @@
 var gulp = require('gulp');
 
-gulp.task('deploy', function() {
+gulp.task('default', function() {
   // place code for your default task here
+});
+
+gulp.task('build', function() {
+  // place code for your build task here
 });

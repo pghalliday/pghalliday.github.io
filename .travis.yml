@@ -1,15 +1,12 @@
 language: node_js
 node_js:
-  - "0.10"
-
+- '0.10'
 before_install:
-  - "npm install npm@2.0.0 -g"
-
-script: npm run-script gulp -- deploy
-
+- npm install npm@2.0.0 -g
+- . ./aliases.sh
+script: gulp -- build
+after_success:
+- ./deploy.sh
 env:
-  - secure: "big long encrypted string"
-
-branches:
-  only:
-    - deploy
+  global:
+    secure: ePN14M5qBoL/0PNz4dM+JI7/kU5zNO5e55z+t6k5ApJ1ddcVtH7zKl8F4J06N/aygHi9c75fyA65PsP2p4bRJ0N3m/hki6aBSRcZmOPWwxjLnnxgxjvSdEr2VLMAOFwbWCp2LamEwfde/UJoa+yeUn2qD77cWPAcfHR0zUqA3MA=
