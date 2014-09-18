@@ -4,6 +4,7 @@ node_js:
 before_install:
 - npm install npm@2.0.0 -g
 before_script:
+- bundle install
 - . ./aliases.sh
 script:
 - gulp build
