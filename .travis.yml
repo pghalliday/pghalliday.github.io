@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "0.10"
+
+before_install:
+  - "npm install npm@2.0.0 -g"
+
+script: npm run-script gulp -- deploy
+
+env:
+  - secure: "big long encrypted string"
+
+branches:
+  only:
+    - deploy
