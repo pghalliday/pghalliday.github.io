@@ -33,6 +33,7 @@ if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
       REPO=${REPO/git:\/\/github.com\//git@github.com:}
       openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in id_rsa.enc -out id_rsa -d
       chmod 600 id_rsa
+      eval `ssh-agent -s`
       ssh-add id_rsa
     fi
     DIR=$(mktemp -d /tmp/pghalliday.github.io.XXXX)
