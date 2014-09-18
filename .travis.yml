@@ -15,5 +15,5 @@ env:
   global:
     - ENCRYPTION_LABEL="e5350353280d"
     - GIT_NAME="Peter Halliday"
-    - GET_EMAIL="pghalliday@gmail.com"
+    - GIT_EMAIL="pghalliday@gmail.com"
     - DEPLOY_BRANCH="deploy"

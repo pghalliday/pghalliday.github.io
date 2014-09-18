@@ -1,20 +1,18 @@
 #!/bin/bash
 set -e
-
-# Travis can only deploy from this branch
-DEPLOY_BRANCH=deploy
+ 
 # Deploy built site to this branch
 TARGET_BRANCH=lets-try-react
 # Sync the contents of this directory where the site should have been built
-SITE_DIR=_site
-
-if [ ! -d "$SITE_DIR" ]; then
-  echo "SITE_DIR ($SITE_DIR) does not exist, build the site directory before deploying"
+SOURCE_DIR=_site
+ 
+if [ ! -d "$SOURCE_DIR" ]; then
+  echo "SOURCE_DIR ($SOURCE_DIR) does not exist, build the source directory before deploying"
   exit 1
 fi
-
+ 
 REPO=$(git config remote.origin.url)
-
+ 
 if [ -n "$TRAVIS_BUILD_ID" ]; then
   # When running on Travis we need to use SSH to deploy to GitHub
   #
@@ -47,7 +45,11 @@ if [ -n "$TRAVIS_BUILD_ID" ]; then
       ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
       ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
       REPO=${REPO/git:\/\/github.com\//git@github.com:}
+      
+      # The `id_rsa.enc` file should have been added to the repo and should
+      # have been created from the deploy private key using `travis encrypt-file`
       openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in id_rsa.enc -out id_rsa -d
+      
       chmod 600 id_rsa
       eval `ssh-agent -s`
       ssh-add id_rsa
@@ -56,13 +58,13 @@ if [ -n "$TRAVIS_BUILD_ID" ]; then
     fi
   fi
 fi
-
+ 
 REPO_NAME=$(basename $REPO)
-DIR=$(mktemp -d /tmp/$REPO_NAME.XXXX)
+TARGET_DIR=$(mktemp -d /tmp/$REPO_NAME.XXXX)
 REV=$(git rev-parse HEAD)
-git clone --branch ${TARGET_BRANCH} ${REPO} ${DIR}
-rsync -rt --delete --exclude=".git" --exclude=".nojekyll" --exclude=".travis.yml" $SITE_DIR/ $DIR/
-cd $DIR
+git clone --branch ${TARGET_BRANCH} ${REPO} ${TARGET_DIR}
+rsync -rt --delete --exclude=".git" --exclude=".nojekyll" --exclude=".travis.yml" $SOURCE_DIR/ $TARGET_DIR/
+cd $TARGET_DIR
 git add -A .
 git commit -m "Built from commit $REV"
 git push $REPO $TARGET_BRANCH
