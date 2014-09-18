@@ -30,9 +30,9 @@ if [ -n "$TRAVIS_BUILD_ID" ]; then
   #   DEPLOY_BRANCH    - The only branch that Travis should deploy from
   #
   echo ENCRYPTION_LABEL: $ENCRYPTION_LABEL
-  echo GIT_NAME: $ENCRYPTION_LABEL
-  echo GIT_EMAIL: $ENCRYPTION_LABEL
-  echo DEPLOY_BRANCH: $ENCRYPTION_LABEL
+  echo GIT_NAME: $GIT_NAME
+  echo GIT_EMAIL: $GIT_EMAIL
+  echo DEPLOY_BRANCH: $DEPLOY_BRANCH
   if [ "$TRAVIS_BRANCH" != "$DEPLOY_BRANCH" ]; then
     echo "Travis should only deploy from the DEPLOY_BRANCH ($DEPLOY_BRANCH) branch"
     exit 1
