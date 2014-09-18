@@ -20,10 +20,6 @@ ENCRYPTED_IV=$encrypted_e5350353280d_iv
 PULL_REQUEST=${TRAVIS_PULL_REQUEST:-false}
 BRANCH=${TRAVIS_BRANCH:-deploy}
 
-# just checking
-REPO=$(git config remote.origin.url)
-echo $REPO
-
 if [ ! -d "$SITE_DIR" ]; then
   echo "SITE_DIR ($SITE_DIR) does not exist, build the site directory before deploying"
   exit 1
@@ -33,6 +29,8 @@ if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
   if [ "$PULL_REQUEST" == "false" ]; then
     REPO=$(git config remote.origin.url)
     if [ -n "$ENCRYPTED_KEY" ]; then
+      # Use SSH and the supplied encrypted deploy key when deploying from Travis
+      REPO=${REPO/git:\/\/github.com\//git@github.com:}
       openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in id_rsa.enc -out id_rsa -d
       chmod 600 id_rsa
       ssh-add id_rsa
