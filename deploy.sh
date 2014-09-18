@@ -41,10 +41,10 @@ if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
     git clone --branch ${TARGET_BRANCH} ${REPO} ${DIR}
     rsync -rt --delete --exclude=".git" --exclude=".nojekyll" --exclude=".travis.yml" $SITE_DIR/ $DIR/
     cd $DIR
-    if [ -z "$GIT_NAME" ]; then
+    if [ -n "$GIT_NAME" ]; then
       git config user.name "$GIT_NAME"
     fi
-    if [ -z "$GIT_EMAIL" ]; then
+    if [ -n "$GIT_EMAIL" ]; then
       git config user.email "$GIT_EMAIL"
     fi
     git add -A .
