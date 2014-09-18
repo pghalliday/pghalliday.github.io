@@ -1,10 +1,22 @@
 #!/bin/bash
 set -e
 
+# Travis can only deploy from this branch
 DEPLOY_BRANCH=deploy
+
+# Deploy built site to this branch
 TARGET_BRANCH=lets-try-react
+
+# Sync the contents of this directory where the site should have been built
 SITE_DIR=_site
 
+# Travis variables for decrypting the GitHub deploy key. If these
+# are not set then local ssh keys should be set
+ENCRYPTED_KEY=$encrypted_e5350353280d_key
+ENCRYPTED_IV=$encrypted_e5350353280d_iv
+
+# Default these variables if not running in Travis so that
+# deploys can be run locally from any branch 
 PULL_REQUEST=${TRAVIS_PULL_REQUEST:-false}
 BRANCH=${TRAVIS_BRANCH:-deploy}
 
@@ -15,8 +27,8 @@ fi
 
 if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
   if [ "$PULL_REQUEST" == "false" ]; then
-    if [ -n "$encrypted_e5350353280d_key" ]; then
-      openssl aes-256-cbc -K $encrypted_e5350353280d_key -iv $encrypted_e5350353280d_iv -in id_rsa.enc -out id_rsa -d
+    if [ -n "$ENCRYPTED_KEY" ]; then
+      openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in id_rsa.enc -out id_rsa -d
       chmod 600 id_rsa
       ssh-add id_rsa
     fi
