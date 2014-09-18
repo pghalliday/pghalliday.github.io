@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>NodeJS - Getting test coverage from child processes</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/css/main.css">
+
+        <!-- Table CSS -->
+        <link rel="stylesheet" href="/css/table.css">
+
+    </head>
+    <body>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/">pghalliday</a></h1>
+            <a class="extra" href="/">home</a>
+          </div>
+
+          <h2>NodeJS - Getting test coverage from child processes</h2>
+<p class="meta">23 Feb 2014</p>
+
+<div class="post">
+<p>This is a problem that I keep running into. I like to use a combination of <code>Grunt</code>, <code>Mocha</code> and <code>Blanket</code> to get coverage reports from my unit tests. The problem is that this creates a global variable to collect the coverage data in the process in which the code under test runs. Normally this is the same process in which <code>Grunt</code> and <code>Mocha</code> are running, however I have a common class of tests in which this is not true.</p>
+
+<p>When I want to perform an end to end integration test or test an entry point to a command line tool then usually I want to use <code>child_process.exec</code> or <code>child_process.spawn</code> to kick it off. This first became apparent when I wanted to test a plugin for <code>Grunt</code> itself, <code>grunt-mocha-test</code>. The workaround was to create a special script that could be launched in place of <code>Grunt</code> that would programatically call <code>Grunt</code>, collect the coverage data and then write it to a file. This script would then be launched by a wrapper to <code>child_process.exec</code> that would collect the coverage data after the exec had completed and merge it with the coverage data from the parent process.</p>
+
+<p>This works well but is not very portable. The challenge then is to create a generic solution to the problem and here it is.</p>
+
+<p>The newly published <a href="https://www.npmjs.org/package/cover-child-process"><code>cover-child-process</code></a> module can merge coverage data from Blanket instrumented source files running in child processes with the coverage data collected in the parent process.</p>
+
+<p>Support for source instrumented with other coverage tools should be easy to add in the future too. Yay :)</p>
+
+</div>
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'pghalliday';
+    var disqus_identifier = 'nodejs--getting-test-coverage-from-child-processes';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+          <div class="footer">
+            <div class="contact">
+              <p>
+                Peter Halliday<br />
+                Software Engineer<br />
+                pghalliday@gmail.com
+              </p>
+            </div>
+            <div class="contact">
+              <p>
+                <a href="https://github.com/pghalliday">github.com/pghalliday</a><br />
+                <a href="https://twitter.com/petehalliday">twitter.com/petehalliday</a><br />
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <script type="text/javascript">
+          /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+          var disqus_shortname = 'pghalliday';
+
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function () {
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+        </script>
+    
+    </body>
+</html>

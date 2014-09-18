@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Submitting Mocha BDD test results to Sonar</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/css/main.css">
+
+        <!-- Table CSS -->
+        <link rel="stylesheet" href="/css/table.css">
+
+    </head>
+    <body>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/">pghalliday</a></h1>
+            <a class="extra" href="/">home</a>
+          </div>
+
+          <h2>Submitting Mocha BDD test results to Sonar</h2>
+<p class="meta">11 Feb 2014</p>
+
+<div class="post">
+<p>I like to use <a href="http://visionmedia.github.io/mocha/">Mocha</a> with the BDD test UI to write my tests and in the office at least, use <a href="http://www.sonarqube.org/">Sonar</a> to collect test and coverage data as well as perform static analysis on source code. For Javascript projects this means using the <a href="http://docs.codehaus.org/display/SONAR/JavaScript+Plugin">Sonar javascript plugin</a>.</p>
+
+<p>A typical <code>sonar-project.properties</code> configuration file will look like this.</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">sonar.projectKey=app:my-app
+sonar.projectName=My Application
+sonar.projectVersion=1.0
+
+sonar.sources=lib/src
+sonar.language=js
+
+sonar.javascript.jstestdriver.reportsPath=reports
+sonar.javascript.lcov.reportPath=reports/lcov.info
+</code></pre></div>
+<p>This tells Sonar that my test results will be in the <code>reports</code> directory and that coverage data will be located at <code>reports/lcov.info</code></p>
+
+<p>The Sonar javascript plugin supports coverage data in the <code>lcov</code> format and test reports in the <code>xunit</code> format.</p>
+
+<p>For my NodeJS projects I use my <a href="https://github.com/pghalliday/grunt-mocha-test"><code>grunt-mocha-test</code></a> plugin to generate the reports. In this case we can use the <a href="https://github.com/StevenLooman/mocha-lcov-reporter"><code>mocha-lcov-reporter</code></a> to generate the coverage report. However when using the standard <code>xunit</code> reporter to generate the test report 2 problems become apparent when the reports are submitted to Sonar.</p>
+
+<ul>
+<li>Sonar will reject reports that have a <code>classname</code> that mirrors a source file, eg. if you have a source file called <code>MyClass.js</code> then you cannot have a test with a <code>classname</code> of <code>MyClass</code> (the standard <code>xunit</code> reporter uses the contents of the <code>Describe</code> text as the classname, so for me this happens a lot!)</li>
+<li>Sonar interprets the <code>classname</code> field as a filename resulting in hard to read test reports in the Sonar UI (this is probably also the cause of the first issue)</li>
+</ul>
+
+<p>The solution for me was to create a new reporter for Mocha based on the <code>xunit</code> reporter.</p>
+
+<p><a href="https://github.com/pghalliday/mocha-sonar-reporter"><code>mocha-sonar-reporter</code></a> will generate <code>xunit</code> output that uses the concatenation of the suite and test titles as the test <code>name</code> and set the <code>classname</code> to a configurable constant so that name collisions can be avoided. If no <code>classname</code> is configured it will default to <code>Test</code>.</p>
+
+</div>
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'pghalliday';
+    var disqus_identifier = 'submitting-mocha-bdd-test-results-to-sonar';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+          <div class="footer">
+            <div class="contact">
+              <p>
+                Peter Halliday<br />
+                Software Engineer<br />
+                pghalliday@gmail.com
+              </p>
+            </div>
+            <div class="contact">
+              <p>
+                <a href="https://github.com/pghalliday">github.com/pghalliday</a><br />
+                <a href="https://twitter.com/petehalliday">twitter.com/petehalliday</a><br />
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <script type="text/javascript">
+          /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+          var disqus_shortname = 'pghalliday';
+
+          /* * * DON'T EDIT BELOW THIS LINE * * */
+          (function () {
+            var s = document.createElement('script'); s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+          }());
+        </script>
+    
+    </body>
+</html>
