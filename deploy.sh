@@ -20,19 +20,20 @@ if [ -n "$TRAVIS_BUILD_ID" ]; then
   #
   # The following converts the repo URL to an SSH location,
   # decrypts the SSH key and sets up the Git config with
-  # the correct user name and email
+  # the correct user name and email (globally as this is a
+  # temporary travis environment)
   #
   # Set the following environment variables in the travis configuration (.travis.yml)
   #
+  #   DEPLOY_BRANCH    - The only branch that Travis should deploy from
   #   ENCRYPTION_LABEL - The label assigned when encrypting the SSH key using travis encrypt-file
   #   GIT_NAME         - The Git user name
   #   GIT_EMAIL        - The Git user email
-  #   DEPLOY_BRANCH    - The only branch that Travis should deploy from
   #
+  echo DEPLOY_BRANCH: $DEPLOY_BRANCH
   echo ENCRYPTION_LABEL: $ENCRYPTION_LABEL
   echo GIT_NAME: $GIT_NAME
   echo GIT_EMAIL: $GIT_EMAIL
-  echo DEPLOY_BRANCH: $DEPLOY_BRANCH
   if [ "$TRAVIS_BRANCH" != "$DEPLOY_BRANCH" ]; then
     echo "Travis should only deploy from the DEPLOY_BRANCH ($DEPLOY_BRANCH) branch"
     exit 1
@@ -50,8 +51,8 @@ if [ -n "$TRAVIS_BUILD_ID" ]; then
       chmod 600 id_rsa
       eval `ssh-agent -s`
       ssh-add id_rsa
-      git config user.name "$GIT_NAME"
-      git config user.email "$GIT_EMAIL"
+      git config --global user.name "$GIT_NAME"
+      git config --global user.email "$GIT_EMAIL"
     fi
   fi
 fi
