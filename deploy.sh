@@ -3,17 +3,12 @@ set -e
 
 # Travis can only deploy from this branch
 DEPLOY_BRANCH=deploy
-
 # Deploy built site to this branch
 TARGET_BRANCH=lets-try-react
-
 # Sync the contents of this directory where the site should have been built
 SITE_DIR=_site
-
-# Travis variables for decrypting the GitHub deploy key. If these
-# are not set then local ssh keys should be set
-ENCRYPTED_KEY=$encrypted_e5350353280d_key
-ENCRYPTED_IV=$encrypted_e5350353280d_iv
+# Unique label associated with Travis file encryption variables
+TRAVIS_FILE_ENCRYPTION_LABEL=e5350353280d
 
 # Default these variables if not running in Travis so that
 # deploys can be run locally from any branch 
@@ -28,6 +23,10 @@ fi
 if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
   if [ "$PULL_REQUEST" == "false" ]; then
     REPO=$(git config remote.origin.url)
+    ENCRYPTED_KEY_VAR=encrypted_${TRAVIS_FILE_ENCRYPTION_LABEL}_key
+    ENCRYPTED_IV_VAR=encrypted_${TRAVIS_FILE_ENCRYPTION_LABEL}_iv
+    ENCRYPTED_KEY=${!ENCRYPTED_KEY_VAR}
+    ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
     if [ -n "$ENCRYPTED_KEY" ]; then
       # Use SSH and the supplied encrypted deploy key when deploying from Travis
       REPO=${REPO/git:\/\/github.com\//git@github.com:}
@@ -36,7 +35,8 @@ if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
       eval `ssh-agent -s`
       ssh-add id_rsa
     fi
-    DIR=$(mktemp -d /tmp/pghalliday.github.io.XXXX)
+    REPO_NAME=$(basename $REPO)
+    DIR=$(mktemp -d /tmp/$REPO_NAME.XXXX)
     REV=$(git rev-parse HEAD)
     git clone --branch ${TARGET_BRANCH} ${REPO} ${DIR}
     rsync -rt --delete --exclude=".git" --exclude=".nojekyll" --exclude=".travis.yml" $SITE_DIR/ $DIR/
