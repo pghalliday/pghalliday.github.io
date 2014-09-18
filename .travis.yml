@@ -13,4 +13,7 @@ after_success:
 - ./deploy.sh
 env:
   global:
-    secure: ePN14M5qBoL/0PNz4dM+JI7/kU5zNO5e55z+t6k5ApJ1ddcVtH7zKl8F4J06N/aygHi9c75fyA65PsP2p4bRJ0N3m/hki6aBSRcZmOPWwxjLnnxgxjvSdEr2VLMAOFwbWCp2LamEwfde/UJoa+yeUn2qD77cWPAcfHR0zUqA3MA=
+    - ENCRYPTION_LABEL="e5350353280d"
+    - GIT_NAME="Peter Halliday"
+    - GET_EMAIL="pghalliday@gmail.com"
+    - DEPLOY_BRANCH="deploy"
