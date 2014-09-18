@@ -18,7 +18,7 @@ ENCRYPTED_IV=$encrypted_e5350353280d_iv
 # Default these variables if not running in Travis so that
 # deploys can be run locally from any branch 
 PULL_REQUEST=${TRAVIS_PULL_REQUEST:-false}
-BRANCH=${TRAVIS_BRANCH:-deploy}
+BRANCH=${TRAVIS_BRANCH:-$DEPLOY_BRANCH}
 
 if [ ! -d "$SITE_DIR" ]; then
   echo "SITE_DIR ($SITE_DIR) does not exist, build the site directory before deploying"
@@ -56,4 +56,4 @@ if [ "$BRANCH" == "$DEPLOY_BRANCH" ]; then
 else
   echo "Can only deploy from the DEPLOY_BRANCH ($DEPLOY_BRANCH) branch"
   exit 1
-if
+fi
