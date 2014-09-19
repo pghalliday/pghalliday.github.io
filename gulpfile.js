@@ -7,23 +7,25 @@ var path = require('path');
 
 var port = process.env.PORT || 4000;
 
+function exec_async(cmd, args, cb) {
+  var child = spawn(cmd, args, {
+    stdio: 'inherit'
+  });
+  child.on('exit', function(code, signal) {
+    var error = null;
+    if (code || signal) {
+      error = new Error(cmd + ' exited with code: ' + code + ' and signal: ' + signal);
+    }
+    cb(error);
+  });
+}
+
 gulp.task('default', function() {
   // place code for your default task here
 });
 
 gulp.task('jekyll', ['default'], function(next) {
-  var jekyll = spawn('jekyll', [
-    'build'
-  ], {
-    stdio: 'inherit'
-  });
-  jekyll.on('exit', function(code, signal) {
-    var error = null;
-    if (code || signal) {
-      error = new Error('jekyll exited with code: ' + code + ' and signal: ' + signal);
-    }
-    next(error);
-  });
+  exec_async('jekyll', ['build'], next);
 });
 
 gulp.task('server', function(next) {
@@ -51,14 +53,5 @@ gulp.task('watch', ['jekyll', 'server'], function() {
 });
 
 gulp.task('deploy', ['jekyll'], function(next) {
-  var deploy = spawn('./deploy.sh', [], {
-    stdio: 'inherit'
-  });
-  deploy.on('exit', function(code, signal) {
-    var error = null;
-    if (code || signal) {
-      error = new Error('deploy.sh exited with code: ' + code + ' and signal: ' + signal);
-    }
-    next(error);
-  });
+  exec_async('./deploy.sh', [], next);
 });
