@@ -46,13 +46,13 @@ if [ -n "$TRAVIS_BUILD_ID" ]; then
       ENCRYPTED_IV=${!ENCRYPTED_IV_VAR}
       REPO=${REPO/git:\/\/github.com\//git@github.com:}
       
-      # The `id_rsa.enc` file should have been added to the repo and should
+      # The `deploy_key.enc` file should have been added to the repo and should
       # have been created from the deploy private key using `travis encrypt-file`
-      openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in id_rsa.enc -out id_rsa -d
+      openssl aes-256-cbc -K $ENCRYPTED_KEY -iv $ENCRYPTED_IV -in deploy_key.enc -out deploy_key -d
       
-      chmod 600 id_rsa
+      chmod 600 deploy_key
       eval `ssh-agent -s`
-      ssh-add id_rsa
+      ssh-add deploy_key
       git config --global user.name "$GIT_NAME"
       git config --global user.email "$GIT_EMAIL"
     fi

@@ -25,10 +25,10 @@ Add the SSH key entries to `.gitignore` as illustrated here
 Generate a private/public key pair without passphrase in the repo directory
 
 ```
-ssh-keygen -t rsa -C "your_email@example.com" -f id_rsa -N ''
+ssh-keygen -t rsa -C "deploy@travis-ci.org" -f deploy_key -N ''
 ```
 
-Add the public key (`id_rsa.pub`) to the GitHub repository as a 'Deploy Key' through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use 'Personal access tokens' but they would then allow access to all repositories associated with the given account - this might be preferable if special GitHub accounts are created specifically for Travis builds and they need to work with multiple repositories.
+Add the public key (`deploy_key.pub`) to the GitHub repository as a 'Deploy Key' through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use 'Personal access tokens' but they would then allow access to all repositories associated with the given account - this might be preferable if special GitHub accounts are created specifically for Travis builds and they need to work with multiple repositories.
 
 Install the travis gem
 
@@ -42,10 +42,10 @@ Login to travis with your GitHub credentials
 travis login
 ```
 
-Encrypt the SSH key to generate `id_rsa.enc`
+Encrypt the SSH key to generate `deploy_key.enc`
 
 ```
-travis encrypt-file id_rsa
+travis encrypt-file deploy_key
 ```
 
 Add the `deploy.sh` file as given here and mark it executable
