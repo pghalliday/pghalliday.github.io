@@ -3,15 +3,18 @@ layout: default
 title: pghalliday
 ---
 
-<div id="home">
-  <h1>Blog Posts</h1>
-  <ul class="posts">
-    {% for post in site.posts %}
-      <li>
-        <span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a>
-        <p>{{ post.excerpt }}</p>
-        <p><a href="{{ post.url }}#disqus_thread" data-disqus-identifier="{{ post.disqus_identifier }}">Comments</a></p>
-      </li>
-    {% endfor %}
-  </ul>
+<div class="page-header">
+  <h1>Posts</h1>
 </div>
+
+{% for post in site.posts %}
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title"><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></h3>
+    </div>
+    <div class="panel-body">
+      <p>{{ post.excerpt }}</p>
+      <ul class="nav nav-pills"><li><a href="{{ post.url }}#disqus_thread" data-disqus-identifier="{{ post.disqus_identifier }}">Comments</a></li></ul>
+    </div>
+  </div>
+{% endfor %}

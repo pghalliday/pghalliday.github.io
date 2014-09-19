@@ -4,6 +4,7 @@ var watch = require('gulp-watch');
 var spawn = require('child_process').spawn;
 var express = require('express');
 var path = require('path');
+var del = require('del');
 
 var port = process.env.PORT || 4000;
 
@@ -20,11 +21,21 @@ function exec_async(cmd, args, cb) {
   });
 }
 
-gulp.task('default', function() {
-  // place code for your default task here
+gulp.task('clean', function(next) {
+  del(['vendor'], next);
 });
 
-gulp.task('jekyll', ['default'], function(next) {
+gulp.task('bootstrap', ['clean'], function() {
+  return gulp.src('bower_components/bootstrap/dist/**/*.{min.css,min.js,eot,svg,ttf,woff}')
+  .pipe(gulp.dest('vendor/bootstrap'));
+});
+
+gulp.task('jquery', ['clean'], function() {
+  return gulp.src('bower_components/jquery/dist/**/*.min.js')
+  .pipe(gulp.dest('vendor/jquery'));
+});
+
+gulp.task('jekyll', ['bootstrap', 'jquery'], function(next) {
   exec_async('jekyll', ['build'], next);
 });
 
@@ -42,7 +53,7 @@ gulp.task('watch', ['jekyll', 'server'], function() {
     '_posts/**/*',
     'bower_components/**/*',
     'css/**/*',
-    'index.html'
+    '*.html'
   ], function() {
       gulp.start('jekyll');
   });
