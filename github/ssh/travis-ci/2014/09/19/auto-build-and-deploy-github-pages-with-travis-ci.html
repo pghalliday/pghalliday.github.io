@@ -82,7 +82,8 @@ git commit -m &quot;adding travis auto build and deploy support&quot;
 <div class="highlight"><pre><code class="language-text" data-lang="text">git checkout master
 </code></pre></div>
 <p>Delete all the existing files and create a <code>.nojekyll</code> file to let GitHub know that it does not need to run Jekyll again.</p>
-
+<div class="highlight"><pre><code class="language-text" data-lang="text">touch .nojekyll
+</code></pre></div>
 <p>Add a <code>.travis.yml</code> file to the <code>master</code> branch as given here to prevent Travis-CI building the master branch when it changes. After all there is nothing for Travis-CI to do in the master branch</p>
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=master.travis.yml"></script>
