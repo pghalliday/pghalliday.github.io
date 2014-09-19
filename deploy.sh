@@ -2,7 +2,7 @@
 set -e
  
 # Deploy built site to this branch
-TARGET_BRANCH=lets-try-react
+TARGET_BRANCH=master
 # Sync the contents of this directory where the site should have been built
 SOURCE_DIR=_site
  
