@@ -11,12 +11,13 @@ gulp.task('default', function() {
   // place code for your default task here
 });
 
-gulp.task('jekyll', ['default'], function() {
-  spawn('jekyll', [
+gulp.task('jekyll', ['default'], function(next) {
+  var jekyll = spawn('jekyll', [
     'build'
   ], {
     stdio: 'inherit'
   });
+  jekyll.on('exit', next);
 });
 
 gulp.task('server', function(next) {
@@ -41,4 +42,8 @@ gulp.task('watch', ['jekyll', 'server'], function() {
   });
 });
 
-gulp.task('build', ['jekyll']);
+gulp.task('publish', ['jekyll'], function() {
+  spawn('./deploy.sh', [], {
+    stdio: 'inherit'
+  });
+});

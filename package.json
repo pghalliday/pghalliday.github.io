@@ -8,8 +8,7 @@
   },
   "engineStrict": true,
   "scripts": {
-    "prepublish": "gulp build",
-    "publish": "./deploy.sh",
+    "publish": "gulp publish",
     "bower": "bower",
     "gulp": "gulp"
   },
