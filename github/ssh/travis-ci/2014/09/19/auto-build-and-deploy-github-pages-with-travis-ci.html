@@ -43,9 +43,9 @@ git push -u origin deploy
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=gitignore.sh"></script>
 
 <p>Generate a private/public key pair without passphrase in the repo directory</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ssh-keygen -t rsa -C &quot;your_email@example.com&quot; -f id_rsa -N &#39;&#39;
+<div class="highlight"><pre><code class="language-text" data-lang="text">ssh-keygen -t rsa -C &quot;deploy@travis-ci.org&quot; -f deploy_key -N &#39;&#39;
 </code></pre></div>
-<p>Add the public key (<code>id_rsa.pub</code>) to the GitHub repository as a &#39;Deploy Key&#39; through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use &#39;Personal access tokens&#39; but they would then allow access to all repositories associated with the given account - this might be preferable if special GitHub accounts are created specifically for Travis builds and they need to work with multiple repositories.</p>
+<p>Add the public key (<code>deploy_key.pub</code>) to the GitHub repository as a &#39;Deploy Key&#39; through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use &#39;Personal access tokens&#39; but they would then allow access to all repositories associated with the given account - this might be preferable if special GitHub accounts are created specifically for Travis builds and they need to work with multiple repositories.</p>
 
 <p>Install the travis gem</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">gem install travis
@@ -53,8 +53,8 @@ git push -u origin deploy
 <p>Login to travis with your GitHub credentials</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">travis login
 </code></pre></div>
-<p>Encrypt the SSH key to generate <code>id_rsa.enc</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">travis encrypt-file id_rsa
+<p>Encrypt the SSH key to generate <code>deploy_key.enc</code></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">travis encrypt-file deploy_key
 </code></pre></div>
 <p>Add the <code>deploy.sh</code> file as given here and mark it executable</p>
 
