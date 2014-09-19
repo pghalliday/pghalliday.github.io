@@ -44,8 +44,9 @@ gulp.task('watch', ['jekyll', 'server'], function() {
   });
 });
 
-gulp.task('deploy', ['jekyll'], function() {
-  spawn('./deploy.sh', [], {
+gulp.task('deploy', ['jekyll'], function(next) {
+  var deploy = spawn('./deploy.sh', [], {
     stdio: 'inherit'
   });
+  deploy.on('exit', next)
 });
