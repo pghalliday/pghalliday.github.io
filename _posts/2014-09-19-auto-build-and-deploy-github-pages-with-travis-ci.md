@@ -82,6 +82,10 @@ git checkout master
 
 Delete all the existing files and create a `.nojekyll` file to let GitHub know that it does not need to run Jekyll again.
 
+```
+touch .nojekyll
+```
+
 Add a `.travis.yml` file to the `master` branch as given here to prevent Travis-CI building the master branch when it changes. After all there is nothing for Travis-CI to do in the master branch
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=master.travis.yml"></script>
