@@ -56,6 +56,13 @@ git push -u origin deploy
 <p>Encrypt the SSH key to generate <code>deploy_key.enc</code></p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">travis encrypt-file deploy_key
 </code></pre></div>
+<p>This will ouput a command that can be used to decrypt the file again during a Travis build. This command has already been added to <code>deploy.sh</code>, however you will need to make a note of the unique encryption label that Travis assigns as this will be added as an environment variable in <code>.travis.yml</code> later. The encryption label can be seen in the command in 2 different variables</p>
+
+<ul>
+<li><code>encrypted_${ENCRYPTION_LABEL}_key</code></li>
+<li><code>encrypted_${ENCRYPTION_LABEL}_iv</code></li>
+</ul>
+
 <p>Add the <code>deploy.sh</code> file as given here and mark it executable</p>
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=auto-build-and-deploy-github-pages-with-travis-ci.sh"></script>
