@@ -48,6 +48,11 @@ Encrypt the SSH key to generate `deploy_key.enc`
 travis encrypt-file deploy_key
 ```
 
+This will ouput a command that can be used to decrypt the file again during a Travis build. This command has already been added to `deploy.sh`, however you will need to make a note of the unique encryption label that Travis assigns as this will be added as an environment variable in `.travis.yml` later. The encryption label can be seen in the command in 2 different variables
+
+- `encrypted_${ENCRYPTION_LABEL}_key`
+- `encrypted_${ENCRYPTION_LABEL}_iv`
+
 Add the `deploy.sh` file as given here and mark it executable
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=auto-build-and-deploy-github-pages-with-travis-ci.sh"></script>
