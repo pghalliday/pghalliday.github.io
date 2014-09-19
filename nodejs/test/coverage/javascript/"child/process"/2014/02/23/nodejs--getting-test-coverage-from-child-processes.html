@@ -1,33 +1,65 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>NodeJS - Getting test coverage from child processes</title>
-        <meta name="viewport" content="width=device-width">
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>NodeJS - Getting test coverage from child processes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!-- syntax highlighting CSS -->
-        <link rel="stylesheet" href="/css/syntax.css">
+    <!-- Bootstrap CSS -->
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/vendor/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
 
-        <!-- Custom CSS -->
-        <link rel="stylesheet" href="/css/main.css">
+    <!-- Additional Bootstrap theme CSS -->
+    <link rel="stylesheet" href="/css/theme.css">
 
-        <!-- Table CSS -->
-        <link rel="stylesheet" href="/css/table.css">
+    <!-- syntax highlighting CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
 
-    </head>
-    <body>
+    <!-- Table CSS -->
+    <link rel="stylesheet" href="/css/table.css">
 
-        <div class="site">
-          <div class="header">
-            <h1 class="title"><a href="/">pghalliday</a></h1>
-            <a class="extra" href="/">home</a>
-          </div>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 
-          <h2>NodeJS - Getting test coverage from child processes</h2>
-<p class="meta">23 Feb 2014</p>
+  </head>
+  <body role="document">
 
-<div class="post">
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">pghalliday</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container theme-showcase" role="main">
+
+      <div class="page-header">
+  <h1>NodeJS - Getting test coverage from child processes</h1>
+</div>
+
+<div class="page-header">
+  <h4>23 Feb 2014</h4>
+</div>
+
 <p>This is a problem that I keep running into. I like to use a combination of <code>Grunt</code>, <code>Mocha</code> and <code>Blanket</code> to get coverage reports from my unit tests. The problem is that this creates a global variable to collect the coverage data in the process in which the code under test runs. Normally this is the same process in which <code>Grunt</code> and <code>Mocha</code> are running, however I have a common class of tests in which this is not true.</p>
 
 <p>When I want to perform an end to end integration test or test an entry point to a command line tool then usually I want to use <code>child_process.exec</code> or <code>child_process.spawn</code> to kick it off. This first became apparent when I wanted to test a plugin for <code>Grunt</code> itself, <code>grunt-mocha-test</code>. The workaround was to create a special script that could be launched in place of <code>Grunt</code> that would programatically call <code>Grunt</code>, collect the coverage data and then write it to a file. This script would then be launched by a wrapper to <code>child_process.exec</code> that would collect the coverage data after the exec had completed and merge it with the coverage data from the parent process.</p>
@@ -38,7 +70,6 @@
 
 <p>Support for source instrumented with other coverage tools should be easy to add in the future too. Yay :)</p>
 
-</div>
 
 
 <div id="disqus_thread"></div>
@@ -59,35 +90,38 @@
 
 
 
-          <div class="footer">
-            <div class="contact">
-              <p>
-                Peter Halliday<br />
-                Software Engineer<br />
-                pghalliday@gmail.com
-              </p>
-            </div>
-            <div class="contact">
-              <p>
-                <a href="https://github.com/pghalliday">github.com/pghalliday</a><br />
-                <a href="https://twitter.com/petehalliday">twitter.com/petehalliday</a><br />
-              </p>
-            </div>
-          </div>
+      <div class="panel panel-default" id="contact">
+        <div class="panel-heading">
+          <h3 class="panel-title">Contact</h3>
         </div>
+        <div class="panel-body">
+          <p>
+            Peter Halliday<br />
+            Software Engineer<br />
+          </p>
+          <a href="mailto:pghalliday@gmail.com">pghalliday@gmail.com</a><br />
+          <a href="https://github.com/pghalliday">github.com/pghalliday</a><br />
+          <a href="https://twitter.com/petehalliday">twitter.com/petehalliday</a><br />
+        </div>
+      </div>
 
-        <script type="text/javascript">
-          /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-          var disqus_shortname = 'pghalliday';
+    </div> <!-- /container -->
 
-          /* * * DON'T EDIT BELOW THIS LINE * * */
-          (function () {
-            var s = document.createElement('script'); s.async = true;
-            s.type = 'text/javascript';
-            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
-            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-          }());
-        </script>
-    
-    </body>
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+      var disqus_shortname = 'pghalliday';
+
+      /* * * DON'T EDIT BELOW THIS LINE * * */
+      (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+    </script>
+  
+  </body>
 </html>
