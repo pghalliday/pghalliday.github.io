@@ -8,7 +8,6 @@
   },
   "engineStrict": true,
   "scripts": {
-    "publish": "gulp publish",
     "bower": "bower",
     "gulp": "gulp"
   },

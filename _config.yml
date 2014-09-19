@@ -16,6 +16,6 @@ exclude: [
   npm-debug.log,
   bower_components,
   gulpfile.js,
-  id_rsa.enc,
+  deploy_key.enc,
   deploy.sh
 ]

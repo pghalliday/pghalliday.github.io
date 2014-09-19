@@ -7,7 +7,7 @@ before_script:
   - bundle install
   - . ./aliases.sh
 script:
-  - npm publish
+  - gulp deploy
 env:
   global:
     - ENCRYPTION_LABEL="e5350353280d"
