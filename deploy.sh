@@ -66,5 +66,5 @@ git clone --branch ${TARGET_BRANCH} ${REPO} ${TARGET_DIR}
 rsync -rt --delete --exclude=".git" --exclude=".nojekyll" --exclude=".travis.yml" $SOURCE_DIR/ $TARGET_DIR/
 cd $TARGET_DIR
 git add -A .
-git commit -m "Built from commit $REV"
+git commit --allow-empty -m "Built from commit $REV"
 git push $REPO $TARGET_BRANCH

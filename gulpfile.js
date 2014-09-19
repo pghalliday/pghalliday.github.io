@@ -17,7 +17,13 @@ gulp.task('jekyll', ['default'], function(next) {
   ], {
     stdio: 'inherit'
   });
-  jekyll.on('exit', next);
+  jekyll.on('exit', function(code, signal) {
+    var error = null;
+    if (code || signal) {
+      error = new Error('jekyll exited with code: ' + code + ' and signal: ' + signal);
+    }
+    next(error);
+  });
 });
 
 gulp.task('server', function(next) {
@@ -48,5 +54,11 @@ gulp.task('deploy', ['jekyll'], function(next) {
   var deploy = spawn('./deploy.sh', [], {
     stdio: 'inherit'
   });
-  deploy.on('exit', next)
+  deploy.on('exit', function(code, signal) {
+    var error = null;
+    if (code || signal) {
+      error = new Error('deploy.sh exited with code: ' + code + ' and signal: ' + signal);
+    }
+    next(error);
+  });
 });
