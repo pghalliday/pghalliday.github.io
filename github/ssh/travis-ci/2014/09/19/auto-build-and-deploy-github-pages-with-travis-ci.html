@@ -60,13 +60,13 @@
   <h4>19 Sep 2014</h4>
 </div>
 
-<p>So you have an existing Jekyll GitHub pages project but you also have some preliminary build steps and/or tests that you need to run before pushing to GitHub to deploy. Now you&#39;re tired of running these steps manually and keeping the built artifacts in your repository. One answer (and the answer illustrated here) is to use Travis-CI to automate the build and deploy steps and retire the automatic Jekyll build that GitHub would perform. So here goes...  </p>
+<p>So you have an existing <a href="http://jekyllrb.com/">Jekyll</a> <a href="https://pages.github.com/">GitHub pages</a> project but you also have some preliminary build steps and/or tests that you need to run before pushing to GitHub to deploy. Now you&#39;re tired of running these steps manually and keeping the built artifacts in your repository. One answer (and the answer illustrated here) is to use <a href="https://travis-ci.org/">Travis-CI</a> to automate the build and deploy steps and retire the automatic Jekyll build that GitHub would perform.</p>
 
 <p>First checkout the GitHub pages project to a new <code>deploy</code> branch.</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">git checkout -b deploy
 git push -u origin deploy
 </code></pre></div>
-<p>Enable Travis-CI on your GitHub pages project.</p>
+<p>Enable <a href="https://travis-ci.org/">Travis-CI</a> on your GitHub pages project.</p>
 
 <p>Set <code>deploy</code> to be the default branch in the GitHub web interface. This will be the branch that you do most of your work in or make future branches from, so it makes sense for it to be the default. You will no longer manually make changes to the <code>master</code> branch.</p>
 
@@ -77,7 +77,7 @@ git push -u origin deploy
 <p>Generate a private/public key pair without passphrase in the repo directory</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">ssh-keygen -t rsa -C &quot;deploy@travis-ci.org&quot; -f deploy_key -N &#39;&#39;
 </code></pre></div>
-<p>Add the public key (<code>deploy_key.pub</code>) to the GitHub repository as a &#39;Deploy Key&#39; through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use &#39;Personal access tokens&#39; but they would then allow access to all repositories associated with the given account - this might be preferable if special GitHub accounts are created specifically for Travis builds and they need to work with multiple repositories.</p>
+<p>Add the public key (<code>deploy_key.pub</code>) to the GitHub repository as a &#39;Deploy Key&#39; through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use &#39;Personal access tokens&#39; but they would then allow access to all repositories associated with the given account - this might be preferable if special GitHub accounts are created specifically for Travis builds and they need to work with multiple repositories. The use of &#39;Personal access tokens&#39; (and my starting point for this approach) is illustrated in Evan Sosenko&#39;s article, <a href="http://evansosenko.com/posts/automatic-publishing-github-pages-travis-ci/">&quot;Automatic publishing to GitHub Pages with Travis CI&quot;</a>.</p>
 
 <p>Install the travis gem</p>
 <div class="highlight"><pre><code class="language-text" data-lang="text">gem install travis
