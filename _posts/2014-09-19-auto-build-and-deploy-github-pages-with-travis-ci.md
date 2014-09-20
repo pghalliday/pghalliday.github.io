@@ -5,11 +5,6 @@ categories: GitHub SSH Travis-CI
 disqus_identifier: auto-build-and-deploy-github-pages-with-travis-ci
 ---
 
-[travis]: https://travis-ci.org/
-[ghpages]: https://pages.github.com/
-[jekyll]: http://jekyllrb.com/
-[reference]: http://evansosenko.com/posts/automatic-publishing-github-pages-travis-ci/
-
 So you have an existing [Jekyll][jekyll] [GitHub pages][ghpages] project but you also have some preliminary build steps and/or tests that you need to run before pushing to GitHub to deploy. Now you're tired of running these steps manually and keeping the built artifacts in your repository. One answer (and the answer illustrated here) is to use [Travis-CI][travis] to automate the build and deploy steps and retire the automatic Jekyll build that GitHub would perform.
 
 First checkout the GitHub pages project to a new `deploy` branch.
@@ -105,3 +100,7 @@ git push --all
 
 This will trigger Travis-CI to do its first deployment from the `deploy` branch.
 
+[travis]: https://travis-ci.org/
+[ghpages]: https://pages.github.com/
+[jekyll]: http://jekyllrb.com/
+[reference]: http://evansosenko.com/posts/automatic-publishing-github-pages-travis-ci/
