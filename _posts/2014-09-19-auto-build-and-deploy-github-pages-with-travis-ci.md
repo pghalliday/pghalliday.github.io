@@ -33,7 +33,7 @@ Generate a private/public key pair without passphrase in the repo directory
 ssh-keygen -t rsa -C "deploy@travis-ci.org" -f deploy_key -N ''
 ```
 
-Add the public key (`deploy_key.pub`) to the GitHub repository as a 'Deploy Key' through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use 'Personal access tokens' but they would then allow access to all repositories associated with the given account - this might be preferable if special GitHub accounts are created specifically for Travis builds and they need to work with multiple repositories. The use of 'Personal access tokens' (and my starting point for this approach) is illustrated in Evan Sosenko's article, ["Automatic publishing to GitHub Pages with Travis CI"][reference].
+Add the public key (`deploy_key.pub`) to the GitHub repository as a 'Deploy Key' through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use 'Personal access tokens' but they would then allow access to all repositories associated with the given account - this might be preferable in an organization context, using special GitHub accounts created specifically for Travis-CI to work with multiple repositories. The use of 'Personal access tokens' (and my starting point for this approach) is illustrated in Evan Sosenko's article, ["Automatic publishing to GitHub Pages with Travis CI"][reference].
 
 Install the travis gem
 
