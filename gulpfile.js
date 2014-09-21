@@ -57,7 +57,6 @@ gulp.task('watch', ['jekyll', 'server'], function() {
   ], function() {
       gulp.start('jekyll');
   });
-
   watch('_site/**/*', function(files) {
       return files.pipe(livereload());
   });
