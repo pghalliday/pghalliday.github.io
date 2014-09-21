@@ -57,7 +57,8 @@ gulp.task('watch', ['jekyll-drafts', 'server'], function() {
     '_posts/**/*',
     'bower_components/**/*',
     'css/**/*',
-    '*.html'
+    '*.html',
+    'CNAME'
   ], function() {
       gulp.start('jekyll-drafts');
   });
