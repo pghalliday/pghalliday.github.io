@@ -39,6 +39,10 @@ gulp.task('jekyll', ['bootstrap', 'jquery'], function(next) {
   exec_async('jekyll', ['build'], next);
 });
 
+gulp.task('jekyll-drafts', ['bootstrap', 'jquery'], function(next) {
+  exec_async('jekyll', ['build', '--drafts'], next);
+});
+
 gulp.task('server', function(next) {
   var server = express();
   server
@@ -46,7 +50,7 @@ gulp.task('server', function(next) {
   .listen(port, next);
 });
 
-gulp.task('watch', ['jekyll', 'server'], function() {
+gulp.task('watch', ['jekyll-drafts', 'server'], function() {
   watch([
     '_drafts/**/*',
     '_layouts/**/*',
@@ -55,8 +59,9 @@ gulp.task('watch', ['jekyll', 'server'], function() {
     'css/**/*',
     '*.html'
   ], function() {
-      gulp.start('jekyll');
+      gulp.start('jekyll-drafts');
   });
+  livereload.listen();
   watch('_site/**/*', function(files) {
       return files.pipe(livereload());
   });
