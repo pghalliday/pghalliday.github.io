@@ -171,7 +171,7 @@ desc.save()
 Set the number of executors
 ---------------------------
 
-As I was building a Jenkins cluster I wanted all my builds to run on slaves and as such the master should have 0 executors. This was the only problem script as it requires a Jenkins restart to apply. I didn't want Jenkins to restart everytime the chef client run (there's that idempotence problem) so had to wrap this with a flag to ensure it only ran on the first Chef run.
+As I was building a Jenkins cluster I wanted all my builds to run on slaves and as such the master should have 0 executors. This was the only problem script as it requires a Jenkins restart to apply. I didn't want Jenkins to restart everytime the chef client ran (there's that idempotence problem) so had to wrap this with a flag to ensure it only ran on the first Chef run.
 
 ```groovy
 import jenkins.model.*
