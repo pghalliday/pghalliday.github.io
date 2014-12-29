@@ -226,12 +226,31 @@ ruby_block 'set jenkins private key' do
 end
 
 # Add the admin user only if it has not been added already then notify the resource
-# to set the security_enabled flag and update the run_state
+# to configure the permissions for the admin user
 jenkins_user 'admin' do
   password '[your admin password]'
   public_keys ['[your public key]']
-  notifies :create, 'ruby_block[set the security_enabled flag]', :immediately
   not_if { node.attribute?('security_enabled') }
+  notifies :execute, 'jenkins_script[configure permissions]', :immediately
+end
+
+# Configure the permissions so that login is required and the admin user is an administrator
+# after this point the private key will be required to execute jenkins scripts (including querying
+# if users exist) so we notify the `set the security_enabled flag` resource to set this up
+jenkins_script 'configure permissions' do
+  command <<-EOH.gsub(/^ {4}/, '')
+    import jenkins.model.*
+    import hudson.security.*
+    def instance = Jenkins.getInstance()
+    def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+    instance.setSecurityRealm(hudsonRealm)
+    def strategy = new GlobalMatrixAuthorizationStrategy()
+    strategy.add(Jenkins.ADMINISTER, "admin")
+    instance.setAuthorizationStrategy(strategy)
+    instance.save()
+  EOH
+  notifies :create, 'ruby_block[set the security_enabled flag]', :immediately
+  action :nothing
 end
 
 # Set the security enabled flag and set the run_state to use the configured private key
