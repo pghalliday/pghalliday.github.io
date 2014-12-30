@@ -239,7 +239,7 @@ end
 # if users exist) so we notify the `set the security_enabled flag` resource to set this up.
 # Also note that since Jenkins 1.556 the private key cannot be used until after the admin user
 # has been added to the security realm
-ojenkins_script 'configure permissions' do
+jenkins_script 'configure permissions' do
   command <<-EOH.gsub(/^ {4}/, '')
     import jenkins.model.*
     import hudson.security.*
@@ -254,7 +254,7 @@ ojenkins_script 'configure permissions' do
   notifies :create, 'ruby_block[set the security_enabled flag]', :immediately
   action :nothing
 end
-
+o
 # Set the security enabled flag and set the run_state to use the configured private key
 ruby_block 'set the security_enabled flag' do
   block do
@@ -273,4 +273,5 @@ end
 [groovy]: http://groovy.codehaus.org/
 [jenkins-api]: http://javadoc.jenkins-ci.org/
 [sonar-plugin]: https://github.com/SonarSource/jenkins-sonar-plugin
+
 
