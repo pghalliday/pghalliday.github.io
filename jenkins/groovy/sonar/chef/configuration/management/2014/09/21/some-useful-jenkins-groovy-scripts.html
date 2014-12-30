@@ -269,7 +269,7 @@
   <span class="n">notifies</span> <span class="ss">:create</span><span class="p">,</span> <span class="s1">&#39;ruby_block[set the security_enabled flag]&#39;</span><span class="p">,</span> <span class="ss">:immediately</span>
   <span class="n">action</span> <span class="ss">:nothing</span>
 <span class="k">end</span>
-<span class="n">o</span>
+
 <span class="c1"># Set the security enabled flag and set the run_state to use the configured private key</span>
 <span class="n">ruby_block</span> <span class="s1">&#39;set the security_enabled flag&#39;</span> <span class="k">do</span>
   <span class="n">block</span> <span class="k">do</span>
