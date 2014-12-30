@@ -254,7 +254,7 @@ jenkins_script 'configure permissions' do
   notifies :create, 'ruby_block[set the security_enabled flag]', :immediately
   action :nothing
 end
-o
+
 # Set the security enabled flag and set the run_state to use the configured private key
 ruby_block 'set the security_enabled flag' do
   block do
@@ -273,5 +273,4 @@ end
 [groovy]: http://groovy.codehaus.org/
 [jenkins-api]: http://javadoc.jenkins-ci.org/
 [sonar-plugin]: https://github.com/SonarSource/jenkins-sonar-plugin
-
 
