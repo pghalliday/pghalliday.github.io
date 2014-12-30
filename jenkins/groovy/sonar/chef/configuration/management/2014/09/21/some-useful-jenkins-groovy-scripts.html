@@ -254,7 +254,7 @@
 <span class="c1"># if users exist) so we notify the `set the security_enabled flag` resource to set this up.</span>
 <span class="c1"># Also note that since Jenkins 1.556 the private key cannot be used until after the admin user</span>
 <span class="c1"># has been added to the security realm</span>
-<span class="n">ojenkins_script</span> <span class="s1">&#39;configure permissions&#39;</span> <span class="k">do</span>
+<span class="n">jenkins_script</span> <span class="s1">&#39;configure permissions&#39;</span> <span class="k">do</span>
   <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="sh">    import jenkins.model.*</span>
 <span class="sh">    import hudson.security.*</span>
@@ -269,7 +269,7 @@
   <span class="n">notifies</span> <span class="ss">:create</span><span class="p">,</span> <span class="s1">&#39;ruby_block[set the security_enabled flag]&#39;</span><span class="p">,</span> <span class="ss">:immediately</span>
   <span class="n">action</span> <span class="ss">:nothing</span>
 <span class="k">end</span>
-
+<span class="n">o</span>
 <span class="c1"># Set the security enabled flag and set the run_state to use the configured private key</span>
 <span class="n">ruby_block</span> <span class="s1">&#39;set the security_enabled flag&#39;</span> <span class="k">do</span>
   <span class="n">block</span> <span class="k">do</span>
