@@ -251,8 +251,10 @@
 
 <span class="c1"># Configure the permissions so that login is required and the admin user is an administrator</span>
 <span class="c1"># after this point the private key will be required to execute jenkins scripts (including querying</span>
-<span class="c1"># if users exist) so we notify the `set the security_enabled flag` resource to set this up</span>
-<span class="n">jenkins_script</span> <span class="s1">&#39;configure permissions&#39;</span> <span class="k">do</span>
+<span class="c1"># if users exist) so we notify the `set the security_enabled flag` resource to set this up.</span>
+<span class="c1"># Also note that since Jenkins 1.556 the private key cannot be used until after the admin user</span>
+<span class="c1"># has been added to the security realm</span>
+<span class="n">ojenkins_script</span> <span class="s1">&#39;configure permissions&#39;</span> <span class="k">do</span>
   <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 <span class="sh">    import jenkins.model.*</span>
 <span class="sh">    import hudson.security.*</span>
