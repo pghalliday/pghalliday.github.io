@@ -236,8 +236,10 @@ end
 
 # Configure the permissions so that login is required and the admin user is an administrator
 # after this point the private key will be required to execute jenkins scripts (including querying
-# if users exist) so we notify the `set the security_enabled flag` resource to set this up
-jenkins_script 'configure permissions' do
+# if users exist) so we notify the `set the security_enabled flag` resource to set this up.
+# Also note that since Jenkins 1.556 the private key cannot be used until after the admin user
+# has been added to the security realm
+ojenkins_script 'configure permissions' do
   command <<-EOH.gsub(/^ {4}/, '')
     import jenkins.model.*
     import hudson.security.*
@@ -271,3 +273,4 @@ end
 [groovy]: http://groovy.codehaus.org/
 [jenkins-api]: http://javadoc.jenkins-ci.org/
 [sonar-plugin]: https://github.com/SonarSource/jenkins-sonar-plugin
+
