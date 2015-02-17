@@ -117,14 +117,16 @@ sudo gem install bundler
 <div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dir</span> <span class="o">=</span> <span class="s1">&#39;app&#39;</span>
 <span class="n">port</span> <span class="o">=</span> <span class="mi">5000</span>
 
-<span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span> <span class="k">do</span>
-  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+\.R$}</span><span class="p">)</span>
-<span class="k">end</span>
-
 <span class="n">guard</span> <span class="s1">&#39;process&#39;</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Shiny&#39;</span><span class="p">,</span> <span class="ss">command</span><span class="p">:</span> <span class="o">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;-e&#39;</span><span class="p">,</span> <span class="s2">&quot;shiny::runApp(&#39;</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">&#39;, port = </span><span class="si">#{</span><span class="n">port</span><span class="si">}</span><span class="s2">)&quot;</span><span class="o">]</span> <span class="k">do</span>
   <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+\.R$}</span><span class="p">)</span>
 <span class="k">end</span>
+
+<span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span><span class="p">,</span> <span class="ss">grace_period</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">5</span> <span class="k">do</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+\.R$}</span><span class="p">)</span>
+<span class="k">end</span>
 </code></pre></div>
+<p>Note the order of the guards to ensure the restart happens before browsers are notified and the configured <code>grace_period</code> for LiveReload to ensure that the application has finished starting.</p>
+
 <p>Now running:</p>
 <div class="highlight"><pre><code class="language-sh" data-lang="sh">bundle <span class="nb">exec </span>guard
 </code></pre></div>
