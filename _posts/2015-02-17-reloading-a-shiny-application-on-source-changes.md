@@ -81,7 +81,7 @@ bundle install
 Created the following `Guardfile`:
 
 ```ruby
-dir = './app'
+dir = 'app'
 port = 5000
 
 guard 'livereload' do
