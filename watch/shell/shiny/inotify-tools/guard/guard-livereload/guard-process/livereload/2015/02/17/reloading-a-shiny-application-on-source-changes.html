@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Reloading a Shiny application on source changes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/vendor/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- Additional Bootstrap theme CSS -->
+    <link rel="stylesheet" href="/css/theme.css">
+
+    <!-- syntax highlighting CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Table CSS -->
+    <link rel="stylesheet" href="/css/table.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  </head>
+  <body role="document">
+
+    <!-- Fixed navbar -->
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">pghalliday</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container theme-showcase" role="main">
+
+      <div class="page-header">
+  <h1>Reloading a Shiny application on source changes</h1>
+</div>
+
+<div class="page-header">
+  <h4>17 Feb 2015</h4>
+</div>
+
+<p>I have been trying to implement watching for changes to source code and auto reloading a <a href="http://shiny.rstudio.com/">Shiny</a> application. The problem being that Shiny applications only reload changes to <code>server.R</code> and <code>ui.R</code> by default, which isn&#39;t so useful when your app gets complicated and you want to make it more modular.</p>
+
+<h2 id="option-1---shell-goodness-:)">Option 1 - Shell goodness :)</h2>
+
+<p>Initially I wanted to add minimal new stuff to my tool chain so I was looking for something that I could do in a shell script. My initial solution was <code>inotify-tools</code>. Simple to install:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install inotify-tools
+</code></pre></div>
+<p>And once I got my head around some shell scripts malarkey, simple to configure by creating a <code>watch.sh</code> script:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c">#!/bin/sh</span>
+
+<span class="nv">WATCHED_DIR</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="p">-./app</span><span class="k">}</span>
+<span class="nv">PORT</span><span class="o">=</span><span class="k">${</span><span class="nv">2</span><span class="p">-5001</span><span class="k">}</span>
+
+start <span class="o">()</span> <span class="o">{</span>
+  R -e <span class="s2">&quot;shiny::runApp(&#39;$WATCHED_DIR&#39;, port = $PORT)&quot;</span> <span class="p">&amp;</span>
+  <span class="nv">PID</span><span class="o">=</span><span class="nv">$!</span>
+<span class="o">}</span>
+
+start
+
+inotifywait -mr <span class="nv">$WATCHED_DIR</span> --format <span class="s1">&#39;%e %f&#39;</span> <span class="se">\</span>
+  -e modify -e delete -e move -e create <span class="se">\</span>
+  <span class="p">|</span> <span class="k">while</span> <span class="nb">read </span>event file<span class="p">;</span> <span class="k">do</span>
+
+  <span class="nb">echo</span> <span class="nv">$event</span> <span class="nv">$file</span>
+
+  <span class="nb">kill</span> <span class="nv">$PID</span>
+  start
+
+<span class="k">done</span>
+</code></pre></div>
+<p>By default this watches <code>./app</code> directory and restarts the Shiny application on port <code>5000</code> whenever a file or directory change is detected (modified, deleted, moved or created). You can also override the path and port on the command line, eg:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">./watch.sh ./src 5001
+</code></pre></div>
+<p>Awesome :) and I&#39;m so pleased with it that I just had to record it here for posterity. The fact is though that I don&#39;t use it anymore (I used it for about 5 minutes). The reason being that next I wanted to integrate <a href="http://livereload.com">LiveReload</a> to also refresh my browser window on updates.</p>
+
+<h2 id="option-2---ruby-magic!">Option 2 - Ruby magic!</h2>
+
+<p>The simplest way for me to run a LiveReload server was with the <code>guard-livereload</code> ruby gem. This means installing <code>guard</code> and running that. So let&#39;s face it, if I&#39;m going to run guard anyway, there&#39;s not much point reloading the application with <code>inotifywait</code> when I could also use <code>guard-process</code>. So I made sure I had ruby and bundler installed:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install ruby
+sudo apt-get install ruby-dev
+sudo gem install bundler
+</code></pre></div>
+<p>Created the following <code>Gemfile</code>:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">source</span> <span class="s2">&quot;https://rubygems.org&quot;</span>
+
+<span class="n">gem</span> <span class="s1">&#39;guard&#39;</span>
+<span class="n">gem</span> <span class="s1">&#39;guard-livereload&#39;</span>
+<span class="n">gem</span> <span class="s1">&#39;guard-process&#39;</span>
+</code></pre></div>
+<p>And installed dependencies:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">bundle install
+</code></pre></div>
+<p>Created the following <code>Guardfile</code>:</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dir</span> <span class="o">=</span> <span class="s1">&#39;./app&#39;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">5000</span>
+
+<span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span> <span class="k">do</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+\.R$}</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">guard</span> <span class="s1">&#39;process&#39;</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Shiny&#39;</span><span class="p">,</span> <span class="ss">command</span><span class="p">:</span> <span class="o">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;-e&#39;</span><span class="p">,</span> <span class="s2">&quot;shiny::runApp(&#39;</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">&#39;, port = </span><span class="si">#{</span><span class="n">port</span><span class="si">}</span><span class="s2">)&quot;</span><span class="o">]</span> <span class="k">do</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+\.R$}</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div>
+<p>Now running:</p>
+<div class="highlight"><pre><code class="language-sh" data-lang="sh">bundle <span class="nb">exec </span>guard
+</code></pre></div>
+<ul>
+<li>Launches my application on port 5000</li>
+<li>Watches for changes then
+
+<ul>
+<li>reloads the application</li>
+<li>reloads connected browsers running the LiveReload plugin</li>
+</ul></li>
+</ul>
+
+
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'pghalliday';
+    var disqus_identifier = 'reloading-a-shiny-application-on-source-changes';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+      <div class="panel panel-default" id="contact">
+        <div class="panel-heading">
+          <h3 class="panel-title">Contact</h3>
+        </div>
+        <div class="panel-body">
+          <p>
+            Peter Halliday<br />
+            Software Engineer<br />
+          </p>
+          <a href="mailto:pghalliday@gmail.com">pghalliday@gmail.com</a><br />
+          <a href="https://github.com/pghalliday">github.com/pghalliday</a><br />
+          <a href="https://twitter.com/pghalliday">twitter.com/pghalliday</a><br />
+        </div>
+      </div>
+
+    </div> <!-- /container -->
+
+    <script src="/vendor/jquery/jquery.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+      var disqus_shortname = 'pghalliday';
+
+      /* * * DON'T EDIT BELOW THIS LINE * * */
+      (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+    </script>
+  
+  </body>
+</html>
