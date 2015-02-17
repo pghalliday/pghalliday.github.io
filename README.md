@@ -41,5 +41,5 @@ Serve locally while editing
 ---------------------------
 
 ```
-jekyll serve --drafts --watch
+gulp watch
 ```

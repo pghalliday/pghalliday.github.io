@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var livereload = require('gulp-livereload');
 var watch = require('gulp-watch');
+var plumber = require('gulp-plumber');
 var spawn = require('child_process').spawn;
 var express = require('express');
 var path = require('path');
@@ -64,7 +65,7 @@ gulp.task('watch', ['jekyll-drafts', 'server'], function() {
   });
   livereload.listen();
   watch('_site/**/*', function(files) {
-      return files.pipe(livereload());
+    return files.pipe(plumber()).pipe(livereload());
   });
 });
 
