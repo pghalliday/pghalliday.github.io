@@ -84,14 +84,16 @@ Created the following `Guardfile`:
 dir = 'app'
 port = 5000
 
-guard 'livereload' do
-  watch(%r{#{dir}/.+\.R$})
-end
-
 guard 'process', name: 'Shiny', command: ['R', '-e', "shiny::runApp('#{dir}', port = #{port})"] do
   watch(%r{#{dir}/.+\.R$})
 end
+
+guard 'livereload', grace_period: 0.5 do
+  watch(%r{#{dir}/.+\.R$})
+end
 ```
+
+Note the order of the guards to ensure the restart happens before browsers are notified and the configured `grace_period` for LiveReload to ensure that the application has finished starting.
 
 Now running:
 
