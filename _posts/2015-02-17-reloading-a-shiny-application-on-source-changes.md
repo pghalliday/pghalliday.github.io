@@ -22,7 +22,7 @@ And once I got my head around some shell scripts malarkey, simple to configure b
 #!/bin/sh
 
 WATCHED_DIR=${1-./app}
-PORT=${2-5001}
+PORT=${2-5000}
 
 start () {
   R -e "shiny::runApp('$WATCHED_DIR', port = $PORT)" &
