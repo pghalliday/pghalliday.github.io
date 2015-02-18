@@ -71,7 +71,7 @@
 <div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c">#!/bin/sh</span>
 
 <span class="nv">WATCHED_DIR</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="p">-./app</span><span class="k">}</span>
-<span class="nv">PORT</span><span class="o">=</span><span class="k">${</span><span class="nv">2</span><span class="p">-5001</span><span class="k">}</span>
+<span class="nv">PORT</span><span class="o">=</span><span class="k">${</span><span class="nv">2</span><span class="p">-5000</span><span class="k">}</span>
 
 start <span class="o">()</span> <span class="o">{</span>
   R -e <span class="s2">&quot;shiny::runApp(&#39;$WATCHED_DIR&#39;, port = $PORT)&quot;</span> <span class="p">&amp;</span>
