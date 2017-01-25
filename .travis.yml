@@ -1,16 +1,20 @@
 language: node_js
 node_js:
-  - '0.10'
+  - '6'
 before_install:
-  - npm install npm@2.0.0 -g
+  - openssl aes-256-cbc -K $encrypted_1ac08c44deb2_key -iv $encrypted_1ac08c44deb2_iv
+    -in id_rsa.enc -out id_rsa -d
 before_script:
   - bundle install
-  - . ./aliases.sh
+  - ". ./aliases.sh"
 script:
-  - gulp deploy
+  - gulp jekyll
+after_success:
+  - npm run gh-pages-travis
 env:
   global:
-    - ENCRYPTION_LABEL="e5350353280d"
-    - GIT_NAME="Peter Halliday"
-    - GIT_EMAIL="pghalliday@gmail.com"
-    - DEPLOY_BRANCH="deploy"
+  - GIT_NAME="Peter Halliday"
+  - GIT_EMAIL="pghalliday@gmail.com"
+  - DEPLOY_BRANCH="deploy"
+  - TARGET_BRANCH="master"
+  - SOURCE_DIR="_site"

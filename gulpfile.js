@@ -68,7 +68,3 @@ gulp.task('watch', ['jekyll-drafts', 'server'], function() {
     return files.pipe(plumber()).pipe(livereload());
   });
 });
-
-gulp.task('deploy', ['jekyll'], function(next) {
-  exec_async('./deploy.sh', [], next);
-});
