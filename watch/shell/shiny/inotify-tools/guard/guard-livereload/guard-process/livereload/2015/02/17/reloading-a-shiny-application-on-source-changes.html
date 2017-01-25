@@ -60,103 +60,111 @@
   <h4>17 Feb 2015</h4>
 </div>
 
-<p>I have been trying to implement watching for changes to source code and auto reloading a <a href="http://shiny.rstudio.com/">Shiny</a> application. The problem being that Shiny applications only reload changes to <code>server.R</code> and <code>ui.R</code> by default, which isn&#39;t so useful when your app gets complicated and you want to make it more modular.</p>
+<p>I have been trying to implement watching for changes to source code and auto reloading a <a href="http://shiny.rstudio.com/">Shiny</a> application. The problem being that Shiny applications only reload changes to <code class="highlighter-rouge">server.R</code> and <code class="highlighter-rouge">ui.R</code> by default, which isn’t so useful when your app gets complicated and you want to make it more modular.</p>
 
-<h2 id="option-1---shell-goodness-:)">Option 1 - Shell goodness :)</h2>
+<h2 id="option-1---shell-goodness-">Option 1 - Shell goodness :)</h2>
 
-<p>Initially I wanted to add minimal new stuff to my tool chain so I was looking for something that I could do in a shell script. My initial solution was <code>inotify-tools</code>. Simple to install:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install inotify-tools
-</code></pre></div>
-<p>And once I got my head around some shell scripts malarkey, simple to configure by creating a <code>watch.sh</code> script:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c">#!/bin/sh</span>
+<p>Initially I wanted to add minimal new stuff to my tool chain so I was looking for something that I could do in a shell script. My initial solution was <code class="highlighter-rouge">inotify-tools</code>. Simple to install:</p>
+
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code>sudo apt-get install inotify-tools
+</code></pre>
+</div>
+
+<p>And once I got my head around some shell scripts malarkey, simple to configure by creating a <code class="highlighter-rouge">watch.sh</code> script:</p>
+
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
 
 <span class="nv">WATCHED_DIR</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="p">-./app</span><span class="k">}</span>
 <span class="nv">PORT</span><span class="o">=</span><span class="k">${</span><span class="nv">2</span><span class="p">-5000</span><span class="k">}</span>
 
 start <span class="o">()</span> <span class="o">{</span>
-  R -e <span class="s2">&quot;shiny::runApp(&#39;$WATCHED_DIR&#39;, port = $PORT)&quot;</span> <span class="p">&amp;</span>
+  R -e <span class="s2">"shiny::runApp('</span><span class="nv">$WATCHED_DIR</span><span class="s2">', port = </span><span class="nv">$PORT</span><span class="s2">)"</span> &amp;
   <span class="nv">PID</span><span class="o">=</span><span class="nv">$!</span>
 <span class="o">}</span>
 
 start
 
-inotifywait -mr <span class="nv">$WATCHED_DIR</span> --format <span class="s1">&#39;%e %f&#39;</span> <span class="se">\</span>
+inotifywait -mr <span class="nv">$WATCHED_DIR</span> --format <span class="s1">'%e %f'</span> <span class="se">\</span>
   -e modify -e delete -e move -e create <span class="se">\</span>
-  <span class="p">|</span> <span class="k">while</span> <span class="nb">read </span>event file<span class="p">;</span> <span class="k">do</span>
+  | <span class="k">while </span><span class="nb">read </span>event file; <span class="k">do
 
-  <span class="nb">echo</span> <span class="nv">$event</span> <span class="nv">$file</span>
+  </span><span class="nb">echo</span> <span class="nv">$event</span> <span class="nv">$file</span>
 
   <span class="nb">kill</span> <span class="nv">$PID</span>
   start
 
 <span class="k">done</span>
-</code></pre></div>
-<p>By default this watches <code>./app</code> directory and restarts the Shiny application on port <code>5000</code> whenever a file or directory change is detected (modified, deleted, moved or created). You can also override the path and port on the command line, eg:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">./watch.sh ./src 5001
-</code></pre></div>
-<p>Awesome :) and I&#39;m so pleased with it that I just had to record it here for posterity. The fact is though that I don&#39;t use it anymore (I used it for about 5 minutes). The reason being that next I wanted to integrate <a href="http://livereload.com">LiveReload</a> to also refresh my browser window on updates.</p>
+</code></pre>
+</div>
 
-<h2 id="option-2---ruby-magic!">Option 2 - Ruby magic!</h2>
+<p>By default this watches <code class="highlighter-rouge">./app</code> directory and restarts the Shiny application on port <code class="highlighter-rouge">5000</code> whenever a file or directory change is detected (modified, deleted, moved or created). You can also override the path and port on the command line, eg:</p>
 
-<p>The simplest way for me to run a LiveReload server was with the <code>guard-livereload</code> ruby gem. This means installing <code>guard</code> and running that. So let&#39;s face it, if I&#39;m going to run guard anyway, there&#39;s not much point reloading the application with <code>inotifywait</code> when I could also use <code>guard-process</code>. So I made sure I had ruby and bundler installed:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">sudo apt-get install ruby
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code>./watch.sh ./src 5001
+</code></pre>
+</div>
+
+<p>Awesome :) and I’m so pleased with it that I just had to record it here for posterity. The fact is though that I don’t use it anymore (I used it for about 5 minutes). The reason being that next I wanted to integrate <a href="http://livereload.com">LiveReload</a> to also refresh my browser window on updates.</p>
+
+<h2 id="option-2---ruby-magic">Option 2 - Ruby magic!</h2>
+
+<p>The simplest way for me to run a LiveReload server was with the <code class="highlighter-rouge">guard-livereload</code> ruby gem. This means installing <code class="highlighter-rouge">guard</code> and running that. So let’s face it, if I’m going to run guard anyway, there’s not much point reloading the application with <code class="highlighter-rouge">inotifywait</code> when I could also use <code class="highlighter-rouge">guard-process</code>. So I made sure I had ruby and bundler installed:</p>
+
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code>sudo apt-get install ruby
 sudo apt-get install ruby-dev
 sudo gem install bundler
-</code></pre></div>
-<p>Created the following <code>Gemfile</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">source</span> <span class="s2">&quot;https://rubygems.org&quot;</span>
+</code></pre>
+</div>
 
-<span class="n">gem</span> <span class="s1">&#39;guard&#39;</span>
-<span class="n">gem</span> <span class="s1">&#39;guard-livereload&#39;</span>
-<span class="n">gem</span> <span class="s1">&#39;guard-process&#39;</span>
-</code></pre></div>
+<p>Created the following <code class="highlighter-rouge">Gemfile</code>:</p>
+
+<div class="language-ruby highlighter-rouge"><pre class="highlight"><code><span class="n">source</span> <span class="s2">"https://rubygems.org"</span>
+
+<span class="n">gem</span> <span class="s1">'guard'</span>
+<span class="n">gem</span> <span class="s1">'guard-livereload'</span>
+<span class="n">gem</span> <span class="s1">'guard-process'</span>
+</code></pre>
+</div>
+
 <p>And installed dependencies:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">bundle install
-</code></pre></div>
-<p>Created the following <code>Guardfile</code>:</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">dir</span> <span class="o">=</span> <span class="s1">&#39;app&#39;</span>
+
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code>bundle install
+</code></pre>
+</div>
+
+<p>Created the following <code class="highlighter-rouge">Guardfile</code>:</p>
+
+<div class="language-ruby highlighter-rouge"><pre class="highlight"><code><span class="n">dir</span> <span class="o">=</span> <span class="s1">'app'</span>
 <span class="n">port</span> <span class="o">=</span> <span class="mi">5000</span>
 
-<span class="n">guard</span> <span class="s1">&#39;process&#39;</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s1">&#39;Shiny&#39;</span><span class="p">,</span> <span class="ss">command</span><span class="p">:</span> <span class="o">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;-e&#39;</span><span class="p">,</span> <span class="s2">&quot;shiny::runApp(&#39;</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">&#39;, port = </span><span class="si">#{</span><span class="n">port</span><span class="si">}</span><span class="s2">)&quot;</span><span class="o">]</span> <span class="k">do</span>
-  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+\.R$}</span><span class="p">)</span>
+<span class="n">guard</span> <span class="s1">'process'</span><span class="p">,</span> <span class="ss">name: </span><span class="s1">'Shiny'</span><span class="p">,</span> <span class="ss">command: </span><span class="p">[</span><span class="s1">'R'</span><span class="p">,</span> <span class="s1">'-e'</span><span class="p">,</span> <span class="s2">"shiny::runApp('</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="s2">', port = </span><span class="si">#{</span><span class="n">port</span><span class="si">}</span><span class="s2">)"</span><span class="p">]</span> <span class="k">do</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+</span><span class="se">\.</span><span class="sr">R$}</span><span class="p">)</span>
 <span class="k">end</span>
 
-<span class="n">guard</span> <span class="s1">&#39;livereload&#39;</span><span class="p">,</span> <span class="ss">grace_period</span><span class="p">:</span> <span class="mi">0</span><span class="o">.</span><span class="mi">5</span> <span class="k">do</span>
-  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+\.R$}</span><span class="p">)</span>
+<span class="n">guard</span> <span class="s1">'livereload'</span><span class="p">,</span> <span class="ss">grace_period: </span><span class="mi">0</span><span class="o">.</span><span class="mi">5</span> <span class="k">do</span>
+  <span class="n">watch</span><span class="p">(</span><span class="sr">%r{</span><span class="si">#{</span><span class="n">dir</span><span class="si">}</span><span class="sr">/.+</span><span class="se">\.</span><span class="sr">R$}</span><span class="p">)</span>
 <span class="k">end</span>
-</code></pre></div>
-<p>Note the order of the guards to ensure the restart happens before browsers are notified and the configured <code>grace_period</code> for LiveReload to ensure that the application has finished starting.</p>
+</code></pre>
+</div>
+
+<p>Note the order of the guards to ensure the restart happens before browsers are notified and the configured <code class="highlighter-rouge">grace_period</code> for LiveReload to ensure that the application has finished starting.</p>
 
 <p>Now running:</p>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh">bundle <span class="nb">exec </span>guard
-</code></pre></div>
-<ul>
-<li>Launches my application on port 5000</li>
-<li>Watches for changes then
+
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code>bundle <span class="nb">exec </span>guard
+</code></pre>
+</div>
 
 <ul>
-<li>reloads the application</li>
-<li>reloads connected browsers running the LiveReload plugin</li>
-</ul></li>
+  <li>Launches my application on port 5000</li>
+  <li>Watches for changes then
+    <ul>
+      <li>reloads the application</li>
+      <li>reloads connected browsers running the LiveReload plugin</li>
+    </ul>
+  </li>
 </ul>
 
 
-
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'pghalliday';
-    var disqus_identifier = 'reloading-a-shiny-application-on-source-changes';
-
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 

@@ -60,7 +60,7 @@
   <h4>02 May 2014</h4>
 </div>
 
-<h1 id="update---10th-august-2014:-the-results-are-in">UPDATE - 10th August 2014: The results are in</h1>
+<h1 id="update---10th-august-2014-the-results-are-in">UPDATE - 10th August 2014: The results are in</h1>
 
 <p>The node stayed stable throughout July and the free tier benefits ran out before that so the following is the complete cost.</p>
 
@@ -68,106 +68,107 @@
 
 <p>The main contributions to this were (incl. VAT @ 20%):</p>
 
-<table><thead>
-<tr>
-<th style="text-align: left">Data Transfer</th>
-<th></th>
-<th></th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">$0.120 per GB - up to 10 TB / month data transfer out</td>
-<td>135.096 GB</td>
-<td>$19.46</td>
-</tr>
-</tbody></table>
+<p>| Data Transfer |   |   |
+|:————–|—|—|
+| $0.120 per GB - up to 10 TB / month data transfer out | 135.096 GB | $19.46 |
+<br /></p>
 
-<p><br></p>
+<p>| EC2 |   |   |
+|:—-|—|—|
+| $0.020 per On Demand Linux t1.micro Instance Hour | 744 Hrs | $17.86 |
+| $0.05 per 1 million I/O requests - US East (Northern Virginia) | 23,715,799 IOs | $1.43 |
+| $0.05 per GB-month of Magnetic provisioned storage - US East (Northern Virginia) | 48.000 GB-Mo | $2.88 |
+<br /></p>
 
-<table><thead>
-<tr>
-<th style="text-align: left">EC2</th>
-<th></th>
-<th></th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">$0.020 per On Demand Linux t1.micro Instance Hour</td>
-<td>744 Hrs</td>
-<td>$17.86</td>
-</tr>
-<tr>
-<td style="text-align: left">$0.05 per 1 million I/O requests - US East (Northern Virginia)</td>
-<td>23,715,799 IOs</td>
-<td>$1.43</td>
-</tr>
-<tr>
-<td style="text-align: left">$0.05 per GB-month of Magnetic provisioned storage - US East (Northern Virginia)</td>
-<td>48.000 GB-Mo</td>
-<td>$2.88</td>
-</tr>
-</tbody></table>
-
-<p><br></p>
-
-<hr>
+<hr />
 
 <p>I just want to know how much it will cost to run a full bitcoin node on an EC2 instance. The two main factors being disk usage (the size of the block chain at the time of writing being around 17GB) and IO (how much traffic I may have to pay for to allow incoming connections on port 8333).</p>
 
 <ol>
-<li>I start with a t1.micro instance running Ubuntu 14.04 (LTS) 64 bit.</li>
-<li>For now I accept the default 8GB root volume and add an additional 40GB EBS volume on which I&#39;ll store the blockchain (Originally I started with 20GB but this did not last long before running out of space and crashing the node - i&#39;m sure less would suffice for a while but i don&#39;t want to resize the disk again every few days/weeks)</li>
-<li>I configure any IP access on port 22 for SSH (I have to be able to configure my server - although I could restrict the IP addresses allowed to connect on this port for added security)</li>
-<li>I configure any IP access on port 8333 (I want this to be a useful node and not a leech! So other nodes have to be able to connect)</li>
-<li>I create a new key pair to access the server using SSH and launch the instance!</li>
+  <li>I start with a t1.micro instance running Ubuntu 14.04 (LTS) 64 bit.</li>
+  <li>For now I accept the default 8GB root volume and add an additional 40GB EBS volume on which I’ll store the blockchain (Originally I started with 20GB but this did not last long before running out of space and crashing the node - i’m sure less would suffice for a while but i don’t want to resize the disk again every few days/weeks)</li>
+  <li>I configure any IP access on port 22 for SSH (I have to be able to configure my server - although I could restrict the IP addresses allowed to connect on this port for added security)</li>
+  <li>I configure any IP access on port 8333 (I want this to be a useful node and not a leech! So other nodes have to be able to connect)</li>
+  <li>I create a new key pair to access the server using SSH and launch the instance!</li>
 </ol>
 
-<p>Next I have to connect and install/configure bitcoind. To simplify things I&#39;ll add a <code>~/.ssh/config</code> file to point to my new key and awkward public DNS name</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">Host bitcoin-node
-    HostName ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com
-    User ubuntu
-    IdentityFile ~/.ssh/bitcoin-node.pem
-</code></pre></div>
-<p>This allows me to connect with a simple <code>ssh bitcoin-node</code></p>
+<p>Next I have to connect and install/configure bitcoind. To simplify things I’ll add a <code class="highlighter-rouge">~/.ssh/config</code> file to point to my new key and awkward public DNS name</p>
 
-<p>So, now to install <code>bitcoind</code>...</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo add-apt-repository ppa:bitcoin/bitcoin
+<div class="highlighter-rouge"><pre class="highlight"><code>Host bitcoin-node
+	HostName ec2-XXX-XXX-XXX-XXX.compute-1.amazonaws.com
+	User ubuntu
+    IdentityFile ~/.ssh/bitcoin-node.pem
+</code></pre>
+</div>
+
+<p>This allows me to connect with a simple <code class="highlighter-rouge">ssh bitcoin-node</code></p>
+
+<p>So, now to install <code class="highlighter-rouge">bitcoind</code>…</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo add-apt-repository ppa:bitcoin/bitcoin
 sudo apt-get update
 sudo apt-get install bitcoind
-</code></pre></div>
-<p>And configure it as a service...</p>
+</code></pre>
+</div>
 
-<p>Before I start the <code>bitcoind</code> service I want to configure it to use my EBS volume for the blockchain. The first step of which is to initialize and mount the volume. Run the following command to get the device name</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text"># lsblk
+<p>And configure it as a service…</p>
+
+<p>Before I start the <code class="highlighter-rouge">bitcoind</code> service I want to configure it to use my EBS volume for the blockchain. The first step of which is to initialize and mount the volume. Run the following command to get the device name</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># lsblk
 NAME  MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
 xvdb  202:16   0  40G  0 disk 
 xvda1 202:1    0   8G  0 disk /
-</code></pre></div>
-<p>As you can see, in my case I have an unitialized volume at <code>/dev/xvdb</code> (<code>lsblk</code> strips the <code>/dev/</code> from the device name). So I use the following command to initialize an <code>ext4</code> filesystem</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo mkfs -t ext4 /dev/xvdb
-</code></pre></div>
+</code></pre>
+</div>
+
+<p>As you can see, in my case I have an unitialized volume at <code class="highlighter-rouge">/dev/xvdb</code> (<code class="highlighter-rouge">lsblk</code> strips the <code class="highlighter-rouge">/dev/</code> from the device name). So I use the following command to initialize an <code class="highlighter-rouge">ext4</code> filesystem</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo mkfs -t ext4 /dev/xvdb
+</code></pre>
+</div>
+
 <p>Next, I need to configure this to be mounted on boot. First I will create a mount point</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo mkdir /data
-</code></pre></div>
-<p>Then we can add the following line to <code>/etc/fstab</code> to mount the volume on boot in future</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">/dev/xvdb       /data   ext4    defaults        0       2
-</code></pre></div>
-<p>Run the following to mount the volumes listed in <code>/etc/fstab</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo mount -a
-</code></pre></div>
-<p>Now add a <code>bitcoin</code> system user, setting its home directory on the EBS volume</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo adduser --system --group --shell /bin/bash --home /data/bitcoin bitcoin
-</code></pre></div>
-<p>To configure <code>bitcoind</code> we now need to add a config file to <code>/data/bitcoin/.bitcoin/bitcoin.conf</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">rpcuser=bitcoinrpc
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo mkdir /data
+</code></pre>
+</div>
+
+<p>Then we can add the following line to <code class="highlighter-rouge">/etc/fstab</code> to mount the volume on boot in future</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/dev/xvdb       /data   ext4    defaults        0       2
+</code></pre>
+</div>
+
+<p>Run the following to mount the volumes listed in <code class="highlighter-rouge">/etc/fstab</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo mount -a
+</code></pre>
+</div>
+
+<p>Now add a <code class="highlighter-rouge">bitcoin</code> system user, setting its home directory on the EBS volume</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo adduser --system --group --shell /bin/bash --home /data/bitcoin bitcoin
+</code></pre>
+</div>
+
+<p>To configure <code class="highlighter-rouge">bitcoind</code> we now need to add a config file to <code class="highlighter-rouge">/data/bitcoin/.bitcoin/bitcoin.conf</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>rpcuser=bitcoinrpc
 rpcpassword=DO_NOT_USE_THIS_PASSWORD_MAKE_UP_SOMETHING_RANDOM_YOU_DONT_HAVE_TO_REMEMBER_IT
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>Now set the permissions on it</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo chown bitcoin:bitcoin /data/bitcoin/.bitcoin/bitcoin.conf
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo chown bitcoin:bitcoin /data/bitcoin/.bitcoin/bitcoin.conf
 sudo chmod 0600 /data/bitcoin/.bitcoin/bitcoin.conf
-</code></pre></div>
-<p>Now we can add an upstart config at <code>/etc/init/bitcoind.conf</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">description &quot;bitcoind&quot;
+</code></pre>
+</div>
+
+<p>Now we can add an upstart config at <code class="highlighter-rouge">/etc/init/bitcoind.conf</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>description "bitcoind"
 
 start on filesystem
 stop on runlevel [!2345]
@@ -181,51 +182,52 @@ user=bitcoin
 home=/data/bitcoin
 cmd=/usr/bin/bitcoind
 pidfile=$home/bitcoind.pid
-# Don&#39;t change anything below here unless you know what you&#39;re doing
-[[ -e $pidfile &amp;&amp; ! -d &quot;/proc/$(cat $pidfile)&quot; ]] &amp;&amp; rm $pidfile
-[[ -e $pidfile &amp;&amp; &quot;$(cat /proc/$(cat $pidfile)/cmdline)&quot; != $cmd* ]] &amp;&amp; rm $pidfile
+# Don't change anything below here unless you know what you're doing
+[[ -e $pidfile &amp;&amp; ! -d "/proc/$(cat $pidfile)" ]] &amp;&amp; rm $pidfile
+[[ -e $pidfile &amp;&amp; "$(cat /proc/$(cat $pidfile)/cmdline)" != $cmd* ]] &amp;&amp; rm $pidfile
 exec start-stop-daemon --start -c $user --chdir $home --pidfile $pidfile --startas $cmd -b --nicelevel 15 -m
 end script
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>Before we can start the service we need to make sure that the machine does not run out of memory and crash it. This will happen after a fairly short time. The solution is to add a swapfile.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo dd if=/dev/zero of=/swapfile bs=1M count=1536
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo dd if=/dev/zero of=/swapfile bs=1M count=1536
 sudo mkswap /swapfile
 sudo swapon /swapfile
-</code></pre></div>
-<p>This creates a 1.5GB (a little over twice the RAM of 0.613GB on a t1.micro instance) swap file and activates it. In order to ensure it is activated on reboot we need to add another entry to <code>/etc/fstab</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">/swapfile       none    swap    sw      0       0 
-</code></pre></div>
-<p>To ensure that the swapfile is only used when it&#39;s really needed we should set the swappiness. This is an optimization of the kernel. A high value (maximum of 100) would tell the kernel to favour the swap file, we will set a low value of 10 to favour RAM when it is available.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">echo 10 | sudo tee /proc/sys/vm/swappiness
+</code></pre>
+</div>
+
+<p>This creates a 1.5GB (a little over twice the RAM of 0.613GB on a t1.micro instance) swap file and activates it. In order to ensure it is activated on reboot we need to add another entry to <code class="highlighter-rouge">/etc/fstab</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/swapfile       none    swap    sw      0       0 
+</code></pre>
+</div>
+
+<p>To ensure that the swapfile is only used when it’s really needed we should set the swappiness. This is an optimization of the kernel. A high value (maximum of 100) would tell the kernel to favour the swap file, we will set a low value of 10 to favour RAM when it is available.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>echo 10 | sudo tee /proc/sys/vm/swappiness
 echo vm.swappiness = 10 | sudo tee -a /etc/sysctl.conf
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>These commands set the current swappiness value and set the kernel configuration to the same value on reboot. To finish configuring the swapfile, set its permissions so that it cannot be read by other users.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo chown root:root /swapfile 
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo chown root:root /swapfile 
 sudo chmod 0600 /swapfile
-</code></pre></div>
-<p>Only now should we register the service and start it...</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sudo initctl reload-configuration
+</code></pre>
+</div>
+
+<p>Only now should we register the service and start it…</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo initctl reload-configuration
 sudo start bitcoind
-</code></pre></div>
-<p>And there we go, the bitcoin node should be running and downloading the blockchain. I have no intention of actually using it as a wallet but hopefully it will be providing the useful services of a participating full node. Now let&#39;s see how the costs stack up.</p>
+</code></pre>
+</div>
+
+<p>And there we go, the bitcoin node should be running and downloading the blockchain. I have no intention of actually using it as a wallet but hopefully it will be providing the useful services of a participating full node. Now let’s see how the costs stack up.</p>
 
 
-
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'pghalliday';
-    var disqus_identifier = 'running-a-full-bitcoin-node-on-aws';
-
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 

@@ -60,50 +60,37 @@
   <h4>21 Mar 2015</h4>
 </div>
 
-<p>Another note I&#39;m really leaving for myself. I&#39;ve migrated my <code>dotfiles</code> project to use <code>Chef</code>, both installing and configuring my commonly used applications. One which is annoying is <code>VirtualBox</code>. 2 problems really. The first is that the VirtualBox Ubuntu repository can be super slow. For now I&#39;m living with that.</p>
+<p>Another note I’m really leaving for myself. I’ve migrated my <code class="highlighter-rouge">dotfiles</code> project to use <code class="highlighter-rouge">Chef</code>, both installing and configuring my commonly used applications. One which is annoying is <code class="highlighter-rouge">VirtualBox</code>. 2 problems really. The first is that the VirtualBox Ubuntu repository can be super slow. For now I’m living with that.</p>
 
 <p>The second is that I need to install the extension pack for good USB support. This is tricky because the download is version specific and in my chef recipe I always install the latest version. Also I had to dig around a bit to discover how to install without a GUI.</p>
 
-<p>Anyway, problem solved and I figured I&#39;d share this handy script that</p>
+<p>Anyway, problem solved and I figured I’d share this handy script that</p>
 
 <ul>
-<li>checks the installed version</li>
-<li>downloads the correct extension pack to the current directory</li>
-<li>verifies the shasum</li>
-<li>installs it</li>
+  <li>checks the installed version</li>
+  <li>downloads the correct extension pack to the current directory</li>
+  <li>verifies the shasum</li>
+  <li>installs it</li>
 </ul>
-<div class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c">#!/bin/bash</span>
+
+<div class="language-sh highlighter-rouge"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
 
 <span class="nb">set</span> -e
 
 <span class="nv">version</span><span class="o">=</span><span class="k">$(</span>VBoxManage --version<span class="k">)</span>
-<span class="nv">IFS</span><span class="o">=</span><span class="s1">&#39;r&#39;</span> <span class="nb">read</span> -a versions <span class="o">&lt;&lt;&lt;</span> <span class="s2">&quot;${version}&quot;</span>
+<span class="nv">IFS</span><span class="o">=</span><span class="s1">'r'</span> <span class="nb">read</span> -a versions <span class="o">&lt;&lt;&lt;</span> <span class="s2">"</span><span class="k">${</span><span class="nv">version</span><span class="k">}</span><span class="s2">"</span>
 <span class="nv">shasums_url</span><span class="o">=</span>https://www.virtualbox.org/download/hashes/<span class="k">${</span><span class="nv">versions</span><span class="p">[0]</span><span class="k">}</span>
 <span class="nv">extpack</span><span class="o">=</span>Oracle_VM_VirtualBox_Extension_Pack-<span class="k">${</span><span class="nv">versions</span><span class="p">[0]</span><span class="k">}</span>-<span class="k">${</span><span class="nv">versions</span><span class="p">[1]</span><span class="k">}</span>.vbox-extpack
 <span class="nv">extpack_url</span><span class="o">=</span>http://download.virtualbox.org/virtualbox/<span class="k">${</span><span class="nv">versions</span><span class="p">[0]</span><span class="k">}</span>
 wget -O <span class="k">${</span><span class="nv">extpack</span><span class="k">}</span> <span class="k">${</span><span class="nv">extpack_url</span><span class="k">}</span>/<span class="k">${</span><span class="nv">extpack</span><span class="k">}</span>
-wget -O - <span class="k">${</span><span class="nv">shasums_url</span><span class="k">}</span>/SHA256SUMS <span class="p">|</span> grep <span class="k">${</span><span class="nv">extpack</span><span class="k">}</span> <span class="p">|</span> sha256sum -c
+wget -O - <span class="k">${</span><span class="nv">shasums_url</span><span class="k">}</span>/SHA256SUMS | grep <span class="k">${</span><span class="nv">extpack</span><span class="k">}</span> | sha256sum -c
 VBoxManage extpack install --replace <span class="k">${</span><span class="nv">extpack</span><span class="k">}</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>Enjoy! ;)</p>
 
 
-
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'pghalliday';
-    var disqus_identifier = 'unattended-install-of-virtualbox-extension-pack';
-
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 

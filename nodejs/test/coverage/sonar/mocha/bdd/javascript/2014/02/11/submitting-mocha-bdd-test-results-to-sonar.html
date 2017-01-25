@@ -62,8 +62,9 @@
 
 <p>I like to use <a href="http://visionmedia.github.io/mocha/">Mocha</a> with the BDD test UI to write my tests and in the office at least, use <a href="http://www.sonarqube.org/">Sonar</a> to collect test and coverage data as well as perform static analysis on source code. For Javascript projects this means using the <a href="http://docs.codehaus.org/display/SONAR/JavaScript+Plugin">Sonar javascript plugin</a>.</p>
 
-<p>A typical <code>sonar-project.properties</code> configuration file will look like this.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">sonar.projectKey=app:my-app
+<p>A typical <code class="highlighter-rouge">sonar-project.properties</code> configuration file will look like this.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sonar.projectKey=app:my-app
 sonar.projectName=My Application
 sonar.projectVersion=1.0
 
@@ -72,39 +73,25 @@ sonar.language=js
 
 sonar.javascript.jstestdriver.reportsPath=reports
 sonar.javascript.lcov.reportPath=reports/lcov.info
-</code></pre></div>
-<p>This tells Sonar that my test results will be in the <code>reports</code> directory and that coverage data will be located at <code>reports/lcov.info</code></p>
+</code></pre>
+</div>
 
-<p>The Sonar javascript plugin supports coverage data in the <code>lcov</code> format and test reports in the <code>xunit</code> format.</p>
+<p>This tells Sonar that my test results will be in the <code class="highlighter-rouge">reports</code> directory and that coverage data will be located at <code class="highlighter-rouge">reports/lcov.info</code></p>
 
-<p>For my NodeJS projects I use my <a href="https://github.com/pghalliday/grunt-mocha-test"><code>grunt-mocha-test</code></a> plugin to generate the reports. In this case we can use the <a href="https://github.com/StevenLooman/mocha-lcov-reporter"><code>mocha-lcov-reporter</code></a> to generate the coverage report. However when using the standard <code>xunit</code> reporter to generate the test report 2 problems become apparent when the reports are submitted to Sonar.</p>
+<p>The Sonar javascript plugin supports coverage data in the <code class="highlighter-rouge">lcov</code> format and test reports in the <code class="highlighter-rouge">xunit</code> format.</p>
+
+<p>For my NodeJS projects I use my <a href="https://github.com/pghalliday/grunt-mocha-test"><code class="highlighter-rouge">grunt-mocha-test</code></a> plugin to generate the reports. In this case we can use the <a href="https://github.com/StevenLooman/mocha-lcov-reporter"><code class="highlighter-rouge">mocha-lcov-reporter</code></a> to generate the coverage report. However when using the standard <code class="highlighter-rouge">xunit</code> reporter to generate the test report 2 problems become apparent when the reports are submitted to Sonar.</p>
 
 <ul>
-<li>Sonar will reject reports that have a <code>classname</code> that mirrors a source file, eg. if you have a source file called <code>MyClass.js</code> then you cannot have a test with a <code>classname</code> of <code>MyClass</code> (the standard <code>xunit</code> reporter uses the contents of the <code>Describe</code> text as the classname, so for me this happens a lot!)</li>
-<li>Sonar interprets the <code>classname</code> field as a filename resulting in hard to read test reports in the Sonar UI (this is probably also the cause of the first issue)</li>
+  <li>Sonar will reject reports that have a <code class="highlighter-rouge">classname</code> that mirrors a source file, eg. if you have a source file called <code class="highlighter-rouge">MyClass.js</code> then you cannot have a test with a <code class="highlighter-rouge">classname</code> of <code class="highlighter-rouge">MyClass</code> (the standard <code class="highlighter-rouge">xunit</code> reporter uses the contents of the <code class="highlighter-rouge">Describe</code> text as the classname, so for me this happens a lot!)</li>
+  <li>Sonar interprets the <code class="highlighter-rouge">classname</code> field as a filename resulting in hard to read test reports in the Sonar UI (this is probably also the cause of the first issue)</li>
 </ul>
 
-<p>The solution for me was to create a new reporter for Mocha based on the <code>xunit</code> reporter.</p>
+<p>The solution for me was to create a new reporter for Mocha based on the <code class="highlighter-rouge">xunit</code> reporter.</p>
 
-<p><a href="https://github.com/pghalliday/mocha-sonar-reporter"><code>mocha-sonar-reporter</code></a> will generate <code>xunit</code> output that uses the concatenation of the suite and test titles as the test <code>name</code> and set the <code>classname</code> to a configurable constant so that name collisions can be avoided. If no <code>classname</code> is configured it will default to <code>Test</code>.</p>
+<p><a href="https://github.com/pghalliday/mocha-sonar-reporter"><code class="highlighter-rouge">mocha-sonar-reporter</code></a> will generate <code class="highlighter-rouge">xunit</code> output that uses the concatenation of the suite and test titles as the test <code class="highlighter-rouge">name</code> and set the <code class="highlighter-rouge">classname</code> to a configurable constant so that name collisions can be avoided. If no <code class="highlighter-rouge">classname</code> is configured it will default to <code class="highlighter-rouge">Test</code>.</p>
 
 
-
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'pghalliday';
-    var disqus_identifier = 'submitting-mocha-bdd-test-results-to-sonar';
-
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 

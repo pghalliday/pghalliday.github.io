@@ -60,23 +60,27 @@
   <h4>21 Sep 2014</h4>
 </div>
 
-<p>Recently I needed to automate the deployment and configuration of a <a href="http://jenkins-ci.org/">Jenkins</a> server. My configuration management tool of choice is <a href="https://www.getchef.com/">Chef</a> and my starting point is the <a href="https://github.com/opscode-cookbooks/jenkins">Opscode Jenkins cookbook</a>. At this time the Jenkins cookbook only provides resources for basic Jenkins configuration, eg. <code>jenkins_user</code>, however it also exposes the <code>jenkins_script</code> resource for running arbitrary <a href="http://groovy.codehaus.org/">Groovy</a> scripts on the server.</p>
+<p>Recently I needed to automate the deployment and configuration of a <a href="http://jenkins-ci.org/">Jenkins</a> server. My configuration management tool of choice is <a href="https://www.getchef.com/">Chef</a> and my starting point is the <a href="https://github.com/opscode-cookbooks/jenkins">Opscode Jenkins cookbook</a>. At this time the Jenkins cookbook only provides resources for basic Jenkins configuration, eg. <code class="highlighter-rouge">jenkins_user</code>, however it also exposes the <code class="highlighter-rouge">jenkins_script</code> resource for running arbitrary <a href="http://groovy.codehaus.org/">Groovy</a> scripts on the server.</p>
 
-<p>Using Groovy it&#39;s possible to configure pretty much every part of a Jenkins server and even its plugins. However, finding documentation on how is not so trivial - the best place to start is the <a href="http://javadoc.jenkins-ci.org/">Jenkins Javadocs</a>.</p>
+<p>Using Groovy it’s possible to configure pretty much every part of a Jenkins server and even its plugins. However, finding documentation on how is not so trivial - the best place to start is the <a href="http://javadoc.jenkins-ci.org/">Jenkins Javadocs</a>.</p>
 
-<p>All of the following scripts were run with the <code>jenkins_script</code> resource as follows</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">jenkins_script</span> <span class="s1">&#39;resource name&#39;</span> <span class="k">do</span>
-  <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="sh">    [Groovy Script]</span>
-<span class="no">  EOH</span>
+<p>All of the following scripts were run with the <code class="highlighter-rouge">jenkins_script</code> resource as follows</p>
+
+<div class="language-ruby highlighter-rouge"><pre class="highlight"><code><span class="n">jenkins_script</span> <span class="s1">'resource name'</span> <span class="k">do</span>
+  <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="p">.</span><span class="nf">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="sh">
+    [Groovy Script]
+</span><span class="no">  EOH</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>It should also be noted that although it might be possible to write idempotent Groovy scripts the following are not exactly idempotent (although they can mostly be run as many times as you like without messing up the configuration)</p>
 
 <h2 id="setting-permissions">Setting permissions</h2>
 
-<p>The first thing I needed to do was configure user permisssions so that only a user called <code>admin</code> could access anything. Note that the following script assumes that an <code>admin</code> user has been added already. Also in the context of a Chef run, immediately after running this, Chef will no longer be able to run scripts on the server unless it uses a private key that has been associated with the <code>admin</code> user (the solution to this problem is given in the <a href="#appendix">appendix</a>).</p>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+<p>The first thing I needed to do was configure user permisssions so that only a user called <code class="highlighter-rouge">admin</code> could access anything. Note that the following script assumes that an <code class="highlighter-rouge">admin</code> user has been added already. Also in the context of a Chef run, immediately after running this, Chef will no longer be able to run scripts on the server unless it uses a private key that has been associated with the <code class="highlighter-rouge">admin</code> user (the solution to this problem is given in the <a href="#appendix">appendix</a>).</p>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 <span class="kn">import</span> <span class="nn">hudson.security.*</span>
 
 <span class="kt">def</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">Jenkins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
@@ -85,168 +89,195 @@
 <span class="n">instance</span><span class="o">.</span><span class="na">setSecurityRealm</span><span class="o">(</span><span class="n">hudsonRealm</span><span class="o">)</span>
 
 <span class="kt">def</span> <span class="n">strategy</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GlobalMatrixAuthorizationStrategy</span><span class="o">()</span>
-<span class="n">strategy</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Jenkins</span><span class="o">.</span><span class="na">ADMINISTER</span><span class="o">,</span> <span class="s2">&quot;admin&quot;</span><span class="o">)</span>
+<span class="n">strategy</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">Jenkins</span><span class="o">.</span><span class="na">ADMINISTER</span><span class="o">,</span> <span class="s2">"admin"</span><span class="o">)</span>
 <span class="n">instance</span><span class="o">.</span><span class="na">setAuthorizationStrategy</span><span class="o">(</span><span class="n">strategy</span><span class="o">)</span>
 
 <span class="n">instance</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h2 id="set-the-slave-agent-port">Set the slave agent port</h2>
 
 <p>By default the jenkins slave agent port is randomized. However in my case I needed to configure my cluster using a firewall on the Jenkins master and thus wanted to open a single port to use for build slaves to communicate with the master using JNLP.</p>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 
 <span class="kt">def</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">Jenkins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
 
 <span class="n">instance</span><span class="o">.</span><span class="na">setSlaveAgentPort</span><span class="o">([</span><span class="n">the</span> <span class="n">fixed</span> <span class="n">port</span> <span class="n">number</span><span class="o">])</span>
 
 <span class="n">instance</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h2 id="set-the-administrator-email-address">Set the administrator email address</h2>
 
-<p>This is the <code>System Admin e-mail address</code> set in the Jenkins configuration</p>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+<p>This is the <code class="highlighter-rouge">System Admin e-mail address</code> set in the Jenkins configuration</p>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 
 <span class="kt">def</span> <span class="n">jenkinsLocationConfiguration</span> <span class="o">=</span> <span class="n">JenkinsLocationConfiguration</span><span class="o">.</span><span class="na">get</span><span class="o">()</span>
 
-<span class="n">jenkinsLocationConfiguration</span><span class="o">.</span><span class="na">setAdminAddress</span><span class="o">(</span><span class="s2">&quot;[your admin name] &lt;[your admin email address]&gt;&quot;</span><span class="o">)</span>
+<span class="n">jenkinsLocationConfiguration</span><span class="o">.</span><span class="na">setAdminAddress</span><span class="o">(</span><span class="s2">"[your admin name] &lt;[your admin email address]&gt;"</span><span class="o">)</span>
 
 <span class="n">jenkinsLocationConfiguration</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h2 id="set-the-mail-server-configuration">Set the mail server configuration</h2>
 
 <p>I need the Jenkins server to mail notifications so I need to configure an SMTP server for it to use</p>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 
 <span class="kt">def</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Jenkins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
 
-<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">&quot;hudson.tasks.Mailer&quot;</span><span class="o">)</span>
+<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">"hudson.tasks.Mailer"</span><span class="o">)</span>
 
-<span class="n">desc</span><span class="o">.</span><span class="na">setSmtpAuth</span><span class="o">(</span><span class="s2">&quot;[SMTP user]&quot;</span><span class="o">,</span> <span class="s2">&quot;[SMTP password]&quot;</span><span class="o">)</span>
-<span class="n">desc</span><span class="o">.</span><span class="na">setReplyToAddress</span><span class="o">(</span><span class="s2">&quot;[reply to email address]&quot;</span><span class="o">)</span>
-<span class="n">desc</span><span class="o">.</span><span class="na">setSmtpHost</span><span class="o">(</span><span class="s2">&quot;[SMTP host]&quot;</span><span class="o">)</span>
+<span class="n">desc</span><span class="o">.</span><span class="na">setSmtpAuth</span><span class="o">(</span><span class="s2">"[SMTP user]"</span><span class="o">,</span> <span class="s2">"[SMTP password]"</span><span class="o">)</span>
+<span class="n">desc</span><span class="o">.</span><span class="na">setReplyToAddress</span><span class="o">(</span><span class="s2">"[reply to email address]"</span><span class="o">)</span>
+<span class="n">desc</span><span class="o">.</span><span class="na">setSmtpHost</span><span class="o">(</span><span class="s2">"[SMTP host]"</span><span class="o">)</span>
 <span class="n">desc</span><span class="o">.</span><span class="na">setUseSsl</span><span class="o">([</span><span class="kc">true</span> <span class="n">or</span> <span class="kc">false</span> <span class="n">to</span> <span class="n">use</span> <span class="n">SLL</span><span class="o">])</span>
-<span class="n">desc</span><span class="o">.</span><span class="na">setSmtpPort</span><span class="o">(</span><span class="s2">&quot;[SMTP port]&quot;</span><span class="o">)</span>
-<span class="n">desc</span><span class="o">.</span><span class="na">setCharset</span><span class="o">(</span><span class="s2">&quot;[character set]&quot;</span><span class="o">)</span>
+<span class="n">desc</span><span class="o">.</span><span class="na">setSmtpPort</span><span class="o">(</span><span class="s2">"[SMTP port]"</span><span class="o">)</span>
+<span class="n">desc</span><span class="o">.</span><span class="na">setCharset</span><span class="o">(</span><span class="s2">"[character set]"</span><span class="o">)</span>
 
 <span class="n">desc</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h2 id="set-the-git-plugin-configuration">Set the Git plugin configuration</h2>
 
 <p>The git client used by Jenkins should have a user name and email set</p>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 
 <span class="kt">def</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Jenkins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
 
-<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">&quot;hudson.plugins.git.GitSCM&quot;</span><span class="o">)</span>
+<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">"hudson.plugins.git.GitSCM"</span><span class="o">)</span>
 
-<span class="n">desc</span><span class="o">.</span><span class="na">setGlobalConfigName</span><span class="o">(</span><span class="s2">&quot;[name to use with git commits]&quot;</span><span class="o">)</span>
-<span class="n">desc</span><span class="o">.</span><span class="na">setGlobalConfigEmail</span><span class="o">(</span><span class="s2">&quot;[email to use with git commits]&quot;</span><span class="o">)</span>
+<span class="n">desc</span><span class="o">.</span><span class="na">setGlobalConfigName</span><span class="o">(</span><span class="s2">"[name to use with git commits]"</span><span class="o">)</span>
+<span class="n">desc</span><span class="o">.</span><span class="na">setGlobalConfigEmail</span><span class="o">(</span><span class="s2">"[email to use with git commits]"</span><span class="o">)</span>
 
 <span class="n">desc</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h2 id="sonar-plugin-configuration">Sonar plugin configuration</h2>
 
 <p>We use Sonar to run static analysis on code and record code coverage, etc. As such I needed to configure both a Sonar installation and a default Sonar runner for Jenkins to use. Javadocs for the Sonar plugin were not so easy to track down and when I did they were not so accurate so some of this was arrived at through trial and error. The best reference however, is the <a href="https://github.com/SonarSource/jenkins-sonar-plugin">Sonar plugin source</a> itself.</p>
 
 <h3 id="add-the-sonar-installation">Add the Sonar installation</h3>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 <span class="kn">import</span> <span class="nn">hudson.plugins.sonar.*</span>
 <span class="kn">import</span> <span class="nn">hudson.plugins.sonar.model.*</span>
 
 <span class="kt">def</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Jenkins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
 
-<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">&quot;hudson.plugins.sonar.SonarPublisher&quot;</span><span class="o">)</span>
+<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">"hudson.plugins.sonar.SonarPublisher"</span><span class="o">)</span>
 
 <span class="kt">def</span> <span class="n">sinst</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SonarInstallation</span><span class="o">(</span>
-  <span class="s2">&quot;[name of the sonar installation - I use the host name]&quot;</span><span class="o">,</span>
+  <span class="s2">"[name of the sonar installation - I use the host name]"</span><span class="o">,</span>
   <span class="o">[</span><span class="kc">true</span> <span class="n">or</span> <span class="kc">false</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">the</span> <span class="n">sonar</span> <span class="n">installation</span><span class="o">],</span>
-  <span class="s2">&quot;[sonar server url]&quot;</span><span class="o">,</span>
-  <span class="s2">&quot;[sonar database url]&quot;</span><span class="o">,</span>
-  <span class="s2">&quot;[sonar database driver]&quot;</span><span class="o">,</span>
-  <span class="s2">&quot;[sonar database user]&quot;</span><span class="o">,</span>
-  <span class="s2">&quot;[sonar database password]&quot;</span><span class="o">,</span>
-  <span class="s2">&quot;[version of sonar maven plugin - I don&#39;t use maven so leave this blank]&quot;</span><span class="o">,</span>
-  <span class="s2">&quot;[additional properties to pass to maven - again I leave this blank]&quot;</span><span class="o">,</span>
+  <span class="s2">"[sonar server url]"</span><span class="o">,</span>
+  <span class="s2">"[sonar database url]"</span><span class="o">,</span>
+  <span class="s2">"[sonar database driver]"</span><span class="o">,</span>
+  <span class="s2">"[sonar database user]"</span><span class="o">,</span>
+  <span class="s2">"[sonar database password]"</span><span class="o">,</span>
+  <span class="s2">"[version of sonar maven plugin - I don't use maven so leave this blank]"</span><span class="o">,</span>
+  <span class="s2">"[additional properties to pass to maven - again I leave this blank]"</span><span class="o">,</span>
   <span class="k">new</span> <span class="nf">TriggersConfig</span><span class="o">(),</span>
-  <span class="s2">&quot;[sonar user]&quot;</span><span class="o">,</span>
-  <span class="s2">&quot;[sonar password]&quot;</span>
+  <span class="s2">"[sonar user]"</span><span class="o">,</span>
+  <span class="s2">"[sonar password]"</span>
 <span class="o">)</span>
 <span class="n">desc</span><span class="o">.</span><span class="na">setInstallations</span><span class="o">(</span><span class="n">sinst</span><span class="o">)</span>
 
 <span class="n">desc</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h3 id="add-the-sonar-runner">Add the Sonar runner</h3>
 
 <p>This adds a runner that will be installed automatically from Maven central</p>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 <span class="kn">import</span> <span class="nn">hudson.plugins.sonar.*</span>
 <span class="kn">import</span> <span class="nn">hudson.tools.*</span>
 
 <span class="kt">def</span> <span class="n">inst</span> <span class="o">=</span> <span class="n">Jenkins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
 
-<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">&quot;hudson.plugins.sonar.SonarRunnerInstallation&quot;</span><span class="o">)</span>
+<span class="kt">def</span> <span class="n">desc</span> <span class="o">=</span> <span class="n">inst</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="s2">"hudson.plugins.sonar.SonarRunnerInstallation"</span><span class="o">)</span>
 
-<span class="kt">def</span> <span class="n">installer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SonarRunnerInstaller</span><span class="o">(</span><span class="s2">&quot;[sonar runner version]&quot;</span><span class="o">)</span>
+<span class="kt">def</span> <span class="n">installer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SonarRunnerInstaller</span><span class="o">(</span><span class="s2">"[sonar runner version]"</span><span class="o">)</span>
 <span class="kt">def</span> <span class="n">prop</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InstallSourceProperty</span><span class="o">([</span><span class="n">installer</span><span class="o">])</span>
-<span class="kt">def</span> <span class="n">sinst</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SonarRunnerInstallation</span><span class="o">(</span><span class="s2">&quot;[name of the sonar runner - I called it Default]&quot;</span><span class="o">,</span> <span class="s2">&quot;[home? - not sure how this is used and I left it blank]&quot;</span><span class="o">,</span> <span class="o">[</span><span class="n">prop</span><span class="o">])</span>
+<span class="kt">def</span> <span class="n">sinst</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SonarRunnerInstallation</span><span class="o">(</span><span class="s2">"[name of the sonar runner - I called it Default]"</span><span class="o">,</span> <span class="s2">"[home? - not sure how this is used and I left it blank]"</span><span class="o">,</span> <span class="o">[</span><span class="n">prop</span><span class="o">])</span>
 <span class="n">desc</span><span class="o">.</span><span class="na">setInstallations</span><span class="o">(</span><span class="n">sinst</span><span class="o">)</span>
 
 <span class="n">desc</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h2 id="set-the-number-of-executors">Set the number of executors</h2>
 
-<p>As I was building a Jenkins cluster I wanted all my builds to run on slaves and as such the master should have 0 executors. This was the only problem script as it requires a Jenkins restart to apply. I didn&#39;t want Jenkins to restart everytime the chef client ran (there&#39;s that idempotence problem) so had to wrap this with a flag to ensure it only ran on the first Chef run.</p>
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
+<p>As I was building a Jenkins cluster I wanted all my builds to run on slaves and as such the master should have 0 executors. This was the only problem script as it requires a Jenkins restart to apply. I didn’t want Jenkins to restart everytime the chef client ran (there’s that idempotence problem) so had to wrap this with a flag to ensure it only ran on the first Chef run.</p>
+
+<div class="language-groovy highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">jenkins.model.*</span>
 
 <span class="kt">def</span> <span class="n">instance</span> <span class="o">=</span> <span class="n">Jenkins</span><span class="o">.</span><span class="na">getInstance</span><span class="o">()</span>
 
 <span class="n">instance</span><span class="o">.</span><span class="na">setNumExecutors</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
 
 <span class="n">instance</span><span class="o">.</span><span class="na">save</span><span class="o">()</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>and wrapped as follows</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">jenkins_script</span> <span class="s1">&#39;master should have 0 executors&#39;</span> <span class="k">do</span>
-  <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="sh">    import jenkins.model.*</span>
 
-<span class="sh">    def instance = Jenkins.getInstance()</span>
+<div class="language-ruby highlighter-rouge"><pre class="highlight"><code><span class="n">jenkins_script</span> <span class="s1">'master should have 0 executors'</span> <span class="k">do</span>
+  <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="p">.</span><span class="nf">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="sh">
+    import jenkins.model.*
 
-<span class="sh">    instance.setNumExecutors(0)</span>
+    def instance = Jenkins.getInstance()
 
-<span class="sh">    instance.save()</span>
-<span class="no">  EOH</span>
-  <span class="n">notifies</span> <span class="ss">:create</span><span class="p">,</span> <span class="s1">&#39;ruby_block[set the executors_set flag]&#39;</span><span class="p">,</span> <span class="ss">:immediately</span>
-  <span class="n">notifies</span> <span class="ss">:restart</span><span class="p">,</span> <span class="s1">&#39;service[jenkins]&#39;</span><span class="p">,</span> <span class="ss">:delayed</span>
-  <span class="n">not_if</span> <span class="p">{</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute?</span><span class="p">(</span><span class="s1">&#39;executors_set&#39;</span><span class="p">)</span> <span class="p">}</span>
+    instance.setNumExecutors(0)
+
+    instance.save()
+</span><span class="no">  EOH</span>
+  <span class="n">notifies</span> <span class="ss">:create</span><span class="p">,</span> <span class="s1">'ruby_block[set the executors_set flag]'</span><span class="p">,</span> <span class="ss">:immediately</span>
+  <span class="n">notifies</span> <span class="ss">:restart</span><span class="p">,</span> <span class="s1">'service[jenkins]'</span><span class="p">,</span> <span class="ss">:delayed</span>
+  <span class="n">not_if</span> <span class="p">{</span> <span class="n">node</span><span class="p">.</span><span class="nf">attribute?</span><span class="p">(</span><span class="s1">'executors_set'</span><span class="p">)</span> <span class="p">}</span>
 <span class="k">end</span>
 
-<span class="n">ruby_block</span> <span class="s1">&#39;set the executors_set flag&#39;</span> <span class="k">do</span>
+<span class="n">ruby_block</span> <span class="s1">'set the executors_set flag'</span> <span class="k">do</span>
   <span class="n">block</span> <span class="k">do</span>
-    <span class="n">node</span><span class="o">.</span><span class="n">set</span><span class="o">[</span><span class="s1">&#39;executors_set&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
-    <span class="n">node</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">node</span><span class="p">.</span><span class="nf">set</span><span class="p">[</span><span class="s1">'executors_set'</span><span class="p">]</span> <span class="o">=</span> <span class="kp">true</span>
+    <span class="n">node</span><span class="p">.</span><span class="nf">save</span>
   <span class="k">end</span>
   <span class="n">action</span> <span class="ss">:nothing</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <h2 id="appendix">Appendix</h2>
 
-<p>Here&#39;s how to add a Jenkins user with Chef and the Jenkins cookbook such that once the user and key has been added, Chef then uses that key for future communication with the server.</p>
-<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># If security was enabled in a previous chef run then set the private key in the run_state</span>
+<p>Here’s how to add a Jenkins user with Chef and the Jenkins cookbook such that once the user and key has been added, Chef then uses that key for future communication with the server.</p>
+
+<div class="language-ruby highlighter-rouge"><pre class="highlight"><code><span class="c1"># If security was enabled in a previous chef run then set the private key in the run_state</span>
 <span class="c1"># now as required by the Jenkins cookbook</span>
-<span class="n">ruby_block</span> <span class="s1">&#39;set jenkins private key&#39;</span> <span class="k">do</span>
+<span class="n">ruby_block</span> <span class="s1">'set jenkins private key'</span> <span class="k">do</span>
   <span class="n">block</span> <span class="k">do</span>
-    <span class="n">node</span><span class="o">.</span><span class="n">run_state</span><span class="o">[</span><span class="ss">:jenkins_private_key</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;[your private key]&#39;</span>
+    <span class="n">node</span><span class="p">.</span><span class="nf">run_state</span><span class="p">[</span><span class="ss">:jenkins_private_key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'[your private key]'</span>
   <span class="k">end</span>
-  <span class="n">only_if</span> <span class="p">{</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute?</span><span class="p">(</span><span class="s1">&#39;security_enabled&#39;</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">only_if</span> <span class="p">{</span> <span class="n">node</span><span class="p">.</span><span class="nf">attribute?</span><span class="p">(</span><span class="s1">'security_enabled'</span><span class="p">)</span> <span class="p">}</span>
 <span class="k">end</span>
 
 <span class="c1"># Add the admin user only if it has not been added already then notify the resource</span>
 <span class="c1"># to configure the permissions for the admin user</span>
-<span class="n">jenkins_user</span> <span class="s1">&#39;admin&#39;</span> <span class="k">do</span>
-  <span class="n">password</span> <span class="s1">&#39;[your admin password]&#39;</span>
-  <span class="n">public_keys</span> <span class="o">[</span><span class="s1">&#39;[your public key]&#39;</span><span class="o">]</span>
-  <span class="n">not_if</span> <span class="p">{</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute?</span><span class="p">(</span><span class="s1">&#39;security_enabled&#39;</span><span class="p">)</span> <span class="p">}</span>
-  <span class="n">notifies</span> <span class="ss">:execute</span><span class="p">,</span> <span class="s1">&#39;jenkins_script[configure permissions]&#39;</span><span class="p">,</span> <span class="ss">:immediately</span>
+<span class="n">jenkins_user</span> <span class="s1">'admin'</span> <span class="k">do</span>
+  <span class="n">password</span> <span class="s1">'[your admin password]'</span>
+  <span class="n">public_keys</span> <span class="p">[</span><span class="s1">'[your public key]'</span><span class="p">]</span>
+  <span class="n">not_if</span> <span class="p">{</span> <span class="n">node</span><span class="p">.</span><span class="nf">attribute?</span><span class="p">(</span><span class="s1">'security_enabled'</span><span class="p">)</span> <span class="p">}</span>
+  <span class="n">notifies</span> <span class="ss">:execute</span><span class="p">,</span> <span class="s1">'jenkins_script[configure permissions]'</span><span class="p">,</span> <span class="ss">:immediately</span>
 <span class="k">end</span>
 
 <span class="c1"># Configure the permissions so that login is required and the admin user is an administrator</span>
@@ -254,49 +285,36 @@
 <span class="c1"># if users exist) so we notify the `set the security_enabled flag` resource to set this up.</span>
 <span class="c1"># Also note that since Jenkins 1.556 the private key cannot be used until after the admin user</span>
 <span class="c1"># has been added to the security realm</span>
-<span class="n">jenkins_script</span> <span class="s1">&#39;configure permissions&#39;</span> <span class="k">do</span>
-  <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="o">.</span><span class="n">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="sh">    import jenkins.model.*</span>
-<span class="sh">    import hudson.security.*</span>
-<span class="sh">    def instance = Jenkins.getInstance()</span>
-<span class="sh">    def hudsonRealm = new HudsonPrivateSecurityRealm(false)</span>
-<span class="sh">    instance.setSecurityRealm(hudsonRealm)</span>
-<span class="sh">    def strategy = new GlobalMatrixAuthorizationStrategy()</span>
-<span class="sh">    strategy.add(Jenkins.ADMINISTER, &quot;admin&quot;)</span>
-<span class="sh">    instance.setAuthorizationStrategy(strategy)</span>
-<span class="sh">    instance.save()</span>
-<span class="no">  EOH</span>
-  <span class="n">notifies</span> <span class="ss">:create</span><span class="p">,</span> <span class="s1">&#39;ruby_block[set the security_enabled flag]&#39;</span><span class="p">,</span> <span class="ss">:immediately</span>
+<span class="n">jenkins_script</span> <span class="s1">'configure permissions'</span> <span class="k">do</span>
+  <span class="n">command</span> <span class="o">&lt;&lt;-</span><span class="no">EOH</span><span class="p">.</span><span class="nf">gsub</span><span class="p">(</span><span class="sr">/^ {4}/</span><span class="p">,</span> <span class="s1">''</span><span class="p">)</span><span class="sh">
+    import jenkins.model.*
+    import hudson.security.*
+    def instance = Jenkins.getInstance()
+    def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+    instance.setSecurityRealm(hudsonRealm)
+    def strategy = new GlobalMatrixAuthorizationStrategy()
+    strategy.add(Jenkins.ADMINISTER, "admin")
+    instance.setAuthorizationStrategy(strategy)
+    instance.save()
+</span><span class="no">  EOH</span>
+  <span class="n">notifies</span> <span class="ss">:create</span><span class="p">,</span> <span class="s1">'ruby_block[set the security_enabled flag]'</span><span class="p">,</span> <span class="ss">:immediately</span>
   <span class="n">action</span> <span class="ss">:nothing</span>
 <span class="k">end</span>
 
 <span class="c1"># Set the security enabled flag and set the run_state to use the configured private key</span>
-<span class="n">ruby_block</span> <span class="s1">&#39;set the security_enabled flag&#39;</span> <span class="k">do</span>
+<span class="n">ruby_block</span> <span class="s1">'set the security_enabled flag'</span> <span class="k">do</span>
   <span class="n">block</span> <span class="k">do</span>
-    <span class="n">node</span><span class="o">.</span><span class="n">run_state</span><span class="o">[</span><span class="ss">:jenkins_private_key</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;[your private key]&#39;</span>
-    <span class="n">node</span><span class="o">.</span><span class="n">set</span><span class="o">[</span><span class="s1">&#39;security_enabled&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
-    <span class="n">node</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">node</span><span class="p">.</span><span class="nf">run_state</span><span class="p">[</span><span class="ss">:jenkins_private_key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'[your private key]'</span>
+    <span class="n">node</span><span class="p">.</span><span class="nf">set</span><span class="p">[</span><span class="s1">'security_enabled'</span><span class="p">]</span> <span class="o">=</span> <span class="kp">true</span>
+    <span class="n">node</span><span class="p">.</span><span class="nf">save</span>
   <span class="k">end</span>
   <span class="n">action</span> <span class="ss">:nothing</span>
 <span class="k">end</span>
-</code></pre></div>
+</code></pre>
+</div>
 
 
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'pghalliday';
-    var disqus_identifier = 'some-useful-jenkins-groovy-scripts';
 
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 

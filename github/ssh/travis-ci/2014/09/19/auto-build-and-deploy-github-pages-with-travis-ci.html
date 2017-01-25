@@ -60,90 +60,105 @@
   <h4>19 Sep 2014</h4>
 </div>
 
-<p>So you have an existing <a href="http://jekyllrb.com/">Jekyll</a> <a href="https://pages.github.com/">GitHub pages</a> project but you also have some preliminary build steps and/or tests that you need to run before pushing to GitHub to deploy. Now you&#39;re tired of running these steps manually and keeping the built artifacts in your repository. One answer (and the answer illustrated here) is to use <a href="https://travis-ci.org/">Travis-CI</a> to automate the build and deploy steps and retire the automatic Jekyll build that GitHub would perform.</p>
+<p>So you have an existing <a href="http://jekyllrb.com/">Jekyll</a> <a href="https://pages.github.com/">GitHub pages</a> project but you also have some preliminary build steps and/or tests that you need to run before pushing to GitHub to deploy. Now you’re tired of running these steps manually and keeping the built artifacts in your repository. One answer (and the answer illustrated here) is to use <a href="https://travis-ci.org/">Travis-CI</a> to automate the build and deploy steps and retire the automatic Jekyll build that GitHub would perform.</p>
 
-<p>First checkout the GitHub pages project to a new <code>deploy</code> branch.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">git checkout -b deploy
+<p>First checkout the GitHub pages project to a new <code class="highlighter-rouge">deploy</code> branch.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git checkout -b deploy
 git push -u origin deploy
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>Enable <a href="https://travis-ci.org/">Travis-CI</a> on your GitHub pages project.</p>
 
-<p>Set <code>deploy</code> to be the default branch in the GitHub web interface. This will be the branch that you do most of your work in or make future branches from, so it makes sense for it to be the default. You will no longer manually make changes to the <code>master</code> branch.</p>
+<p>Set <code class="highlighter-rouge">deploy</code> to be the default branch in the GitHub web interface. This will be the branch that you do most of your work in or make future branches from, so it makes sense for it to be the default. You will no longer manually make changes to the <code class="highlighter-rouge">master</code> branch.</p>
 
-<p>Add the SSH key entries to <code>.gitignore</code> as illustrated here</p>
+<p>Add the SSH key entries to <code class="highlighter-rouge">.gitignore</code> as illustrated here</p>
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=gitignore.sh"></script>
 
 <p>Generate a private/public key pair without passphrase in the repo directory</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">ssh-keygen -t rsa -C &quot;deploy@travis-ci.org&quot; -f deploy_key -N &#39;&#39;
-</code></pre></div>
-<p>Add the public key (<code>deploy_key.pub</code>) to the GitHub repository as a &#39;Deploy Key&#39; through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use &#39;Personal access tokens&#39; but they would then allow access to all repositories associated with the given account - this might be preferable in an organization context, using special GitHub accounts created specifically for Travis-CI to work with multiple repositories. The use of &#39;Personal access tokens&#39; (and my starting point for this approach) is illustrated in Evan Sosenko&#39;s article, <a href="http://evansosenko.com/posts/automatic-publishing-github-pages-travis-ci/">&quot;Automatic publishing to GitHub Pages with Travis CI&quot;</a>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ssh-keygen -t rsa -C "deploy@travis-ci.org" -f deploy_key -N ''
+</code></pre>
+</div>
+
+<p>Add the public key (<code class="highlighter-rouge">deploy_key.pub</code>) to the GitHub repository as a ‘Deploy Key’ through the web interface. We are using deploy keys so that we can make them specific to a single repository. An alternative approach could use ‘Personal access tokens’ but they would then allow access to all repositories associated with the given account - this might be preferable in an organization context, using special GitHub accounts created specifically for Travis-CI to work with multiple repositories. The use of ‘Personal access tokens’ (and my starting point for this approach) is illustrated in Evan Sosenko’s article, <a href="http://evansosenko.com/posts/automatic-publishing-github-pages-travis-ci/">“Automatic publishing to GitHub Pages with Travis CI”</a>.</p>
 
 <p>Install the travis gem</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">gem install travis
-</code></pre></div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>gem install travis
+</code></pre>
+</div>
+
 <p>Login to travis with your GitHub credentials</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">travis login
-</code></pre></div>
-<p>Encrypt the SSH key to generate <code>deploy_key.enc</code></p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">travis encrypt-file deploy_key
-</code></pre></div>
-<p>This will ouput a command that can be used to decrypt the file again during a Travis build. This command has already been added to <code>deploy.sh</code>, however you will need to make a note of the unique encryption label that Travis assigns as this will be added as an environment variable in <code>.travis.yml</code> later. The encryption label can be seen in the command in 2 different variables</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>travis login
+</code></pre>
+</div>
+
+<p>Encrypt the SSH key to generate <code class="highlighter-rouge">deploy_key.enc</code></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>travis encrypt-file deploy_key
+</code></pre>
+</div>
+
+<p>This will ouput a command that can be used to decrypt the file again during a Travis build. This command has already been added to <code class="highlighter-rouge">deploy.sh</code>, however you will need to make a note of the unique encryption label that Travis assigns as this will be added as an environment variable in <code class="highlighter-rouge">.travis.yml</code> later. The encryption label can be seen in the command in 2 different variables</p>
 
 <ul>
-<li><code>encrypted_${ENCRYPTION_LABEL}_key</code></li>
-<li><code>encrypted_${ENCRYPTION_LABEL}_iv</code></li>
+  <li><code class="highlighter-rouge">encrypted_${ENCRYPTION_LABEL}_key</code></li>
+  <li><code class="highlighter-rouge">encrypted_${ENCRYPTION_LABEL}_iv</code></li>
 </ul>
 
-<p>Add the <code>deploy.sh</code> file as given here and mark it executable</p>
+<p>Add the <code class="highlighter-rouge">deploy.sh</code> file as given here and mark it executable</p>
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=auto-build-and-deploy-github-pages-with-travis-ci.sh"></script>
-<div class="highlight"><pre><code class="language-text" data-lang="text">chmod +x deploy.sh
-</code></pre></div>
-<p>Add a <code>.travis.yml</code> to the branch as given here</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>chmod +x deploy.sh
+</code></pre>
+</div>
+
+<p>Add a <code class="highlighter-rouge">.travis.yml</code> to the branch as given here</p>
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=deploy.travis.yml"></script>
 
-<p>Add a <code>build</code> task to your <code>Rakefile</code> that at least calls <code>jekyll build</code> but should also perform the additional build and test steps that you wanted Travis-CI to do in the first place.</p>
+<p>Add a <code class="highlighter-rouge">build</code> task to your <code class="highlighter-rouge">Rakefile</code> that at least calls <code class="highlighter-rouge">jekyll build</code> but should also perform the additional build and test steps that you wanted Travis-CI to do in the first place.</p>
 
-<p>Commit your changes to the <code>deploy</code> branch but don&#39;t push them yet</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">git add -A .
-git commit -m &quot;adding travis auto build and deploy support&quot;
-</code></pre></div>
-<p>Switch back to the <code>master</code> branch that GitHub will use for the source of your GitHub pages site</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">git checkout master
-</code></pre></div>
-<p>Delete all the existing files and create a <code>.nojekyll</code> file to let GitHub know that it does not need to run Jekyll again.</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">touch .nojekyll
-</code></pre></div>
-<p>Add a <code>.travis.yml</code> file to the <code>master</code> branch as given here to prevent Travis-CI building the master branch when it changes. After all there is nothing for Travis-CI to do in the master branch</p>
+<p>Commit your changes to the <code class="highlighter-rouge">deploy</code> branch but don’t push them yet</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git add -A .
+git commit -m "adding travis auto build and deploy support"
+</code></pre>
+</div>
+
+<p>Switch back to the <code class="highlighter-rouge">master</code> branch that GitHub will use for the source of your GitHub pages site</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git checkout master
+</code></pre>
+</div>
+
+<p>Delete all the existing files and create a <code class="highlighter-rouge">.nojekyll</code> file to let GitHub know that it does not need to run Jekyll again.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>touch .nojekyll
+</code></pre>
+</div>
+
+<p>Add a <code class="highlighter-rouge">.travis.yml</code> file to the <code class="highlighter-rouge">master</code> branch as given here to prevent Travis-CI building the master branch when it changes. After all there is nothing for Travis-CI to do in the master branch</p>
 
 <script src="https://gist.github.com/pghalliday/240fe740d523dad21d3f.js?file=master.travis.yml"></script>
 
-<p>Commit the <code>master</code> branch and push both branches back to GitHub</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">git add -A .
-git commit -m &quot;Prepare master branch as a deployment target&quot;
+<p>Commit the <code class="highlighter-rouge">master</code> branch and push both branches back to GitHub</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>git add -A .
+git commit -m "Prepare master branch as a deployment target"
 git push --all
-</code></pre></div>
-<p>This will trigger Travis-CI to do its first deployment from the <code>deploy</code> branch.</p>
+</code></pre>
+</div>
+
+<p>This will trigger Travis-CI to do its first deployment from the <code class="highlighter-rouge">deploy</code> branch.</p>
 
 
 
-<div id="disqus_thread"></div>
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-    var disqus_shortname = 'pghalliday';
-    var disqus_identifier = 'auto-build-and-deploy-github-pages-with-travis-ci';
-
-    /* * * DON'T EDIT BELOW THIS LINE * * */
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
 
 
