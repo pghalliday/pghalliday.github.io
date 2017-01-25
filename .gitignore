@@ -4,3 +4,4 @@ npm-debug.log
 id_rsa
 id_rsa.pub
 vendor
+/node_modules
