@@ -3,6 +3,7 @@ layout: post
 title:  "Unattended Install of VirtualBox Extension Pack"
 categories: virtualbox extension pack unattended chef dotfiles
 disqus_identifier: unattended-install-of-virtualbox-extension-pack
+comments: true
 ---
 
 Another note I'm really leaving for myself. I've migrated my `dotfiles` project to use `Chef`, both installing and configuring my commonly used applications. One which is annoying is `VirtualBox`. 2 problems really. The first is that the VirtualBox Ubuntu repository can be super slow. For now I'm living with that.

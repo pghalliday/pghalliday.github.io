@@ -3,6 +3,7 @@ layout: post
 title:  "Reloading a Shiny application on source changes"
 categories: watch shell shiny inotify-tools guard guard-livereload guard-process livereload
 disqus_identifier: reloading-a-shiny-application-on-source-changes
+comments: true
 ---
 
 I have been trying to implement watching for changes to source code and auto reloading a [Shiny](http://shiny.rstudio.com/) application. The problem being that Shiny applications only reload changes to `server.R` and `ui.R` by default, which isn't so useful when your app gets complicated and you want to make it more modular.

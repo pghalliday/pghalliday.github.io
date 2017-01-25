@@ -3,6 +3,7 @@ layout: post
 title:  "First Post!"
 categories: jekyll update
 disqus_identifier: first-post
+comments: true
 ---
 
 New blogging platform - no more blogger :)

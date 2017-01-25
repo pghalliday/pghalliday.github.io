@@ -3,6 +3,7 @@ layout: post
 title:  "Running a full Bitcoin node on AWS"
 categories: AWS bitcoin
 disqus_identifier: running-a-full-bitcoin-node-on-aws
+comments: true
 ---
 
 UPDATE - 10th August 2014: The results are in

@@ -3,6 +3,7 @@ layout: post
 title:  "Some useful Jenkins Groovy scripts"
 categories: Jenkins Groovy Sonar Chef configuration management
 disqus_identifier: some-useful-jenkins-groovy-scripts
+comments: true
 ---
 
 Recently I needed to automate the deployment and configuration of a [Jenkins][jenkins] server. My configuration management tool of choice is [Chef][chef] and my starting point is the [Opscode Jenkins cookbook][jenkins-cookbook]. At this time the Jenkins cookbook only provides resources for basic Jenkins configuration, eg. `jenkins_user`, however it also exposes the `jenkins_script` resource for running arbitrary [Groovy][groovy] scripts on the server.

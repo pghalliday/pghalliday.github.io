@@ -3,6 +3,7 @@ layout: post
 title:  "Submitting Mocha BDD test results to Sonar"
 categories: NodeJS test coverage Sonar Mocha BDD Javascript
 disqus_identifier: submitting-mocha-bdd-test-results-to-sonar
+comments: true
 ---
 
 I like to use [Mocha](http://visionmedia.github.io/mocha/) with the BDD test UI to write my tests and in the office at least, use [Sonar](http://www.sonarqube.org/) to collect test and coverage data as well as perform static analysis on source code. For Javascript projects this means using the [Sonar javascript plugin](http://docs.codehaus.org/display/SONAR/JavaScript+Plugin).
