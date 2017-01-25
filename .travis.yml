@@ -9,7 +9,6 @@ before_script:
   - ". ./aliases.sh"
 script:
   - gulp jekyll
-after_success:
   - npm run gh-pages-travis
 env:
   global:
