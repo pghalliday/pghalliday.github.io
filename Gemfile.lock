@@ -243,6 +243,7 @@ DEPENDENCIES
   guard-jekyll-plus
   guard-livereload
   guard-rake
+  rake
 
 BUNDLED WITH
    1.14.3
