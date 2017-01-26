@@ -8,9 +8,11 @@ exclude: [
   README.md,
   Guardfile,
   Rakefile,
+  lib,
   Gemfile,
   Gemfile.lock,
   bower.json,
   bower_components,
-  id_rsa.enc
+  id_rsa.enc,
+  id_rsa
 ]

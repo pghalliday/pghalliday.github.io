@@ -1,15 +1,15 @@
 language: ruby
 rvm:
-  - 2.3
+- 2.3
 before_install:
-  - openssl aes-256-cbc -K $encrypted_1ac08c44deb2_key -iv $encrypted_1ac08c44deb2_iv
-    -in id_rsa.enc -out id_rsa -d
+- openssl aes-256-cbc -K $encrypted_1ac08c44deb2_key -iv $encrypted_1ac08c44deb2_iv
+  -in id_rsa.enc -out id_rsa -d
 install:
-  - bundle install --without development
+- bundle install --without development
 script:
-  - bundle exec rake
-  - bundle exec jekyll build
-  - bundle exec gh-pages-travis
+- bundle exec rake
+- bundle exec jekyll build
+- bundle exec gh-pages-travis
 env:
   global:
   - GIT_NAME="Peter Halliday"
