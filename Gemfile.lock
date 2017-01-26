@@ -96,6 +96,9 @@ GEM
       guard (~> 2.8)
       guard-compat (~> 1.0)
       multi_json (~> 1.8)
+    guard-rake (1.0.0)
+      guard
+      rake
     html-pipeline (2.5.0)
       activesupport (>= 2)
       nokogiri (>= 1.4)
@@ -210,6 +213,7 @@ GEM
       method_source (~> 0.8.1)
       slop (~> 3.4)
     public_suffix (2.0.5)
+    rake (12.0.0)
     rb-fsevent (0.9.8)
     rb-inotify (0.9.7)
       ffi (>= 0.5.0)
@@ -238,6 +242,7 @@ DEPENDENCIES
   github-pages
   guard-jekyll-plus
   guard-livereload
+  guard-rake
 
 BUNDLED WITH
    1.14.3

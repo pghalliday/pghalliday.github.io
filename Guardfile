@@ -1,20 +1,9 @@
-# A sample Guardfile
-# More info at https://github.com/guard/guard#readme
+# generate the vendor directory
+guard 'rake', task: 'default' do
+  watch(%r{^bower_components/.+})
+end
 
-## Uncomment and set this to only include directories you want to watch
-# directories %w(app lib config test spec features) \
-#  .select{|d| Dir.exists?(d) ? d : UI.warning("Directory #{d} does not exist")}
-
-## Note: if you are using the `directories` clause above and you are not
-## watching the project directory ('.'), then you will want to move
-## the Guardfile to a watched dir and symlink it back, e.g.
-#
-#  $ mkdir config
-#  $ mv Guardfile config/
-#  $ ln -s config/Guardfile .
-#
-# and, you'll have to watch "config/Guardfile" instead of "Guardfile"
-
+# generate the _site directory
 guard 'jekyll-plus', serve: true, drafts: true do
   watch(%r{^_config.yml})
   watch(%r{^index.html})
@@ -23,9 +12,10 @@ guard 'jekyll-plus', serve: true, drafts: true do
   watch(%r{^_layouts/.+})
   watch(%r{^_posts/.+})
   watch(%r{^css/.+})
-  watch(%r{^bower_components/.+})
+  watch(%r{^vendor/.+})
 end
 
+# reload browsers
 guard 'livereload', grace_period: 1.0 do
   watch(%r{^_site/.+})
 end

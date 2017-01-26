@@ -7,6 +7,7 @@ before_install:
 before_script:
   - bundle install --without development
 script:
+  - bundle exec rake
   - bundle exec jekyll build
   - npm run gh-pages-travis
 env:

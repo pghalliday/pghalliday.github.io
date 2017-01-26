@@ -13,12 +13,9 @@ Github Pages for pghalliday.
   gem install bundler
   ```
 
-- NodeJS
-
 ## Install local tools and dependencies
 
 ```
-npm install
 bundle install
 ```
 

@@ -7,9 +7,11 @@ excerpt_separator: "\n"
 exclude: [
   README.md,
   Guardfile,
+  Rakefile,
   Gemfile,
   Gemfile.lock,
   bower.json,
+  bower_components,
   package.json,
   node_modules,
   npm-debug.log,
