@@ -1,8 +1,7 @@
 {
   "name": "pghalliday.github.io",
   "dependencies": {
-    "bootstrap": "~3.2.0",
-    "react": "~0.11.1"
+    "bootstrap": "~3.2.0"
   },
   "ignore": [
     "**/.*",

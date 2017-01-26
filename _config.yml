@@ -6,16 +6,12 @@ highlighter: rouge
 excerpt_separator: "\n"
 exclude: [
   README.md,
-  Rakefile,
+  Guardfile,
   Gemfile,
   Gemfile.lock,
   bower.json,
   package.json,
   node_modules,
-  aliases.sh,
   npm-debug.log,
-  bower_components,
-  gulpfile.js,
-  deploy_key.enc,
-  deploy.sh
+  id_rsa.enc
 ]
