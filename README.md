@@ -1,45 +1,29 @@
-pghalliday.github.io
-====================
+# pghalliday.github.io
 
 Github Pages for pghalliday.
 
+## Prerequisites
 
-Prerequisites
--------------
-
-- Ruby >=2.0.0
+- Ruby
 - Bundler
 
   ```
   gem install bundler
   ```
 
-- Node >=0.10.31
-- NPM >=2.0.0
-  - 2.0.0 is very new and it may be necessary to install NodeJS, update NPM then restart the shell
+- NodeJS
 
-  ```
-  npm install npm@2.0.0 -g
-  ```
-
-Install local tools
--------------------
+## Install local tools and dependencies
 
 ```
 npm install
 bundle install
 ```
 
-Set up short aliases for tools per shell
-----------------------------------------
+## Serve locally while editing
 
 ```
-. ./aliases.sh
+bundle exec guard
 ```
 
-Serve locally while editing
----------------------------
-
-```
-gulp watch
-```
+This will build and serve the site including drafts. It will also start a LiveReload server. It will then monitor for changes and rebuild/reload.
