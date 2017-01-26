@@ -10,4 +10,5 @@ end
 
 group :travis do
   gem 'rake'
+  gem 'gh-pages-travis'
 end
