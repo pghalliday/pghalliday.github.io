@@ -1,4 +1,8 @@
 source 'https://rubygems.org'
-gem 'guard-livereload'
-gem 'guard-jekyll-plus'
+
 gem 'github-pages'
+
+group :development do
+  gem 'guard-livereload'
+  gem 'guard-jekyll-plus'
+end
