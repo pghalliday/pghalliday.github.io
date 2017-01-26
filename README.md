@@ -1,6 +1,6 @@
 # pghalliday.github.io
 
-[![Build Status](https://travis-ci.org/pghalliday/pghalliday.github.io.svg?branch=master)](https://travis-ci.org/pghalliday/pghalliday.github.io)
+[![Build Status](https://travis-ci.org/pghalliday/pghalliday.github.io.svg?branch=deploy)](https://travis-ci.org/pghalliday/pghalliday.github.io)
 
 Github Pages for pghalliday.
 
